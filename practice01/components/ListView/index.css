@@ -1,0 +1,7 @@
+.cim-listview-container{
+  min-height: 50vh;
+}
+
+.cim-listview-container .cim-listview-top{
+  float: right;
+}

@@ -1,0 +1,19 @@
+.cim-popup-container{
+  padding: 15px;
+}
+
+.cim-popup-container .cim-input-group{
+  margin: 15px;  
+}
+
+.cim-popup-container .cim-input-group .cim-input{
+  border-radius: 2px;
+    padding: 2px;
+    margin-left: 15px;
+    width: 400px;
+}
+
+.cim-popup-container .cim-popup-footer{
+  height: 50px;
+  float: right;
+}

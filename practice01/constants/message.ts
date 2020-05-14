@@ -1,0 +1,1 @@
+export const CALL_KINTONE_API_ERROR = 'Something went wrong when calling kintone rest api.';
