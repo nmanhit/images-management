@@ -13,17 +13,9 @@ function post(url: string, params: any, addContentType: boolean = true) {
     }
     xhr.onload = function() {
       if (xhr.status === 200) {
-        resolve({
-          error: false,
-          message: null,
-          data: xhr.responseText,
-        });
+        resolve(JSON.parse(xhr.responseText));
       } else {
-        reject({
-          error: true,
-          message: CALL_KINTONE_API_ERROR,
-          data: xhr.responseText,
-        });
+        reject(xhr.responseText);
       }
     };
     xhr.send(params);

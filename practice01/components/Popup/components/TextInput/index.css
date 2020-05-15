@@ -1,6 +1,3 @@
-.cim-popup-container{
-  padding: 15px;
-}
 
 .cim-popup-container .cim-input-group{
   margin: 15px;  
@@ -16,4 +13,7 @@
 .cim-popup-container .cim-popup-footer{
   height: 50px;
   float: right;
+  position: absolute;
+  right: 20px;
+  bottom: 10px;
 }

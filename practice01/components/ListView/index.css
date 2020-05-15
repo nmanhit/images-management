@@ -1,7 +1,19 @@
+#btn_open_popup{
+  position: absolute;
+  right: 15px;
+}
+
 .cim-listview-container{
   min-height: 50vh;
 }
 
 .cim-listview-container .cim-listview-top{
-  float: right;
+  height: 40px;
+  width: 100%;
+  position: relative;
+}
+
+.cim-listview-content{
+  margin: 20px;
+  overflow: auto;
 }

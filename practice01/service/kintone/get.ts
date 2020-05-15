@@ -12,11 +12,7 @@ function get(url: string, params: any) {
     xhr.setRequestHeader('X-Cybozu-API-Token', API_TOKEN);
     xhr.onload = function() {
       if (xhr.status === 200) {
-        resolve({
-          error: false,
-          message: null,
-          data: xhr.responseText,
-        });
+        resolve(JSON.parse(xhr.responseText));
       } else {
         reject({
           error: true,
@@ -32,7 +28,8 @@ function get(url: string, params: any) {
 function toQueryString(params: any) {
   const parts = [];
   for (const i in params) {
-    if (params.hasOwnProperty.call(i)) {
+    // eslint-disable-next-line no-prototype-builtins
+    if (params.hasOwnProperty(i)) {
       parts.push(encodeURIComponent(i) + '=' + encodeURIComponent(params[i]));
     }
   }

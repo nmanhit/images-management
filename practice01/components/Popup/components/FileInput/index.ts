@@ -41,12 +41,7 @@ class FileInput {
       .add('display-block');
   }
 
-  public blobToBase64(blob: Blob) {
-
-  }
-
   public fileToBlob(file: File) {
-    //return new Blob(file, {type: file.type});
     return file;
   }
 }
