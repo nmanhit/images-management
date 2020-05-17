@@ -1,21 +1,25 @@
-import {addRecord, uploadFile} from '../../service/ImageManager';
+import {addRecord, getRecordById, uploadFile, updateRecord} from '../../service/ImageManager';
 import {
   POPUP_PLEASE_ENTER_YOUR_FILE_IMAGE,
   POPUP_PLEASE_ENTER_YOUR_FILE_NAME,
   POPUP_FILE_TYPE_IS_NOT_SUPPORTED,
   POPUP_INPUT_DEFAULT_VALUE
 } from './../../constants/message';
-import {ROOT_ID, TITLE_HEADER} from '../../config';
+import {TITLE_HEADER} from '../../config';
 import TextInput from './components/TextInput/index';
 import Button from '../BaseComponent/Button/index';
 
 import '../Popup/index.css';
 import FileInput from './components/FileInput/index';
 import ListView from '../ListView/index';
+import {fileToBase64} from '../../utils/index';
+
 class Popup {
   protected root: HTMLElement;
-  constructor() {
-    this.root = document.getElementById(ROOT_ID);
+  private recordId : number;
+  constructor(rootId: string, recordId: number = 0) {
+    this.root = document.getElementById(rootId);
+    this.recordId = recordId;
     this.render();
   }
 
@@ -35,7 +39,7 @@ class Popup {
     rootPopup.classList.remove('display-block');
   }
 
-  async handleUploading() {
+  async handleUploading(recordId: number) {
     const fileName = (this.root.querySelector('#fileNameId') as HTMLInputElement).value;
     const fileAttachment = (this.root.querySelector('#fileUploadId') as HTMLInputElement).files[0];
     const params = {
@@ -44,15 +48,23 @@ class Popup {
     };
     if (this.validateData(params)) {
       const uploadEffect: any = await uploadFile(fileAttachment);
-      const base64 = await this.fileToBase64(fileAttachment);
+      const base64 = await fileToBase64(fileAttachment);
       const fileType = fileAttachment.type;
-      const record = {
+      let record: any = {
         'fcFileName': {'value': params.fileName},
         'fcFileAttachment': {'value': [{'fileKey': uploadEffect.fileKey}]},
-        'fcHistoryImages': {'value': JSON.stringify([{'base64': base64, 'fileType': fileType}])}
+        'fcHistoryImages': {'value': [{'fileType': fileType, 'createAt': new Date().getTime(), 'base64': base64}]}
       };
-      const recordEffect = await addRecord(record);
-      new ListView().renderItem();
+      if (recordId > 0){
+        const currentRecord = await getRecordById(recordId);
+        const currentHistory = JSON.parse(currentRecord?.fcHistoryImages?.value);
+        record.fcHistoryImages.value = JSON.stringify([...record.fcHistoryImages.value, ...currentHistory]);
+        await updateRecord(recordId, record);
+      } else {
+        record.fcHistoryImages.value = JSON.stringify(record.fcHistoryImages.value);
+        await addRecord(record);
+        new ListView().renderItem();
+      }
       this.close();
       return true;
     }
@@ -75,16 +87,6 @@ class Popup {
       return false;
     }
     return true;
-  }
-
-  fileToBase64(file: File) {
-    return new Promise((resolve) => {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onload = () => {
-        resolve(fileReader.result);
-      };
-    });
   }
 
   setMessage(message: string) {
@@ -131,7 +133,7 @@ class Popup {
 
       const btnUpload = new Button().render({'id': 'btn_upload', 'class': 'primary', 'text': 'Upload'});
       footer.appendChild(btnUpload);
-      btnUpload.addEventListener('click', () => this.handleUploading());
+      btnUpload.addEventListener('click', () => this.handleUploading(this.recordId));
 
       const btnCancel = new Button().render({'id': 'btn_cancel', 'class': 'danger', 'text': 'Cancel'});
       footer.appendChild(btnCancel);

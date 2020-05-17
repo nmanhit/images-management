@@ -1,0 +1,42 @@
+#btn_open_popup{
+  position: absolute;
+  right: 15px;
+}
+
+.cim-detailview-container{
+  min-height: 50vh;
+  min-width: 600px;
+}
+
+.cim-detailview-container .cim-detailview-top{
+  height: 40px;
+  width: 100%;
+  position: relative;
+}
+
+.cim-detailview-content{
+  margin: 20px;
+  overflow: auto;
+}
+
+.cim-detailview-table td, .cim-detailview-table th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.cim-detailview-table tr:nth-child(even){
+  background-color: #f2f2f2;
+}
+
+.cim-detailview-table tr:hover {
+  background-color: #ddd;
+}
+
+.cim-detailview-table thead th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color: #4CAF50;
+  color: white;
+  min-width: 200px;
+}

@@ -6,7 +6,8 @@ class Button {
       ...{
         'class': 'primary',
         'text': 'Button',
-        'id': 'button_id'
+        'id': 'button_id',
+        'dataIndex': 0
       },
       ...params
     };
@@ -16,6 +17,7 @@ class Button {
       container.classList.add(opts.class);
     }
     container.setAttribute('id', opts.id);
+    container.setAttribute('data-index', opts.dataIndex);
     container.innerText = opts.text;
     return container;
   }

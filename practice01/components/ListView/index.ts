@@ -1,29 +1,33 @@
-import {ROOT_ID} from '../../config';
+import {ROOT_ID, API_SERVICE_ENDPOINT} from '../../config';
 
 import {getRecords, getNewestRecord} from '../../service/ImageManager';
 import Button from '../BaseComponent/Button/index';
 import Popup from '../Popup/index';
 import Card from './components/Card/index';
 
-import '../ListView/index.css';
+import './index.css';
 
 class ListView {
-  private root: HTMLElement;
+  private rootElm: HTMLElement;
   private pageNum: number;
   private isLoading: boolean;
 
   constructor() {
-    this.root = document.getElementById(ROOT_ID);
+    this.rootElm = document.getElementById(ROOT_ID);
     this.pageNum = 0;
     this.isLoading = false;
   }
 
-  private getHeaderEl() {
-    return this.root.querySelector('.cim-listview-header');
+  private getHeaderEl(): HTMLDivElement {
+    return this.rootElm.querySelector('.cim-listview-header') as HTMLDivElement;
   }
 
   private getListViewContentEl() {
-    return this.root.querySelector('.cim-listview-content') as HTMLDivElement;
+    return this.rootElm.querySelector('.cim-listview-content') as HTMLDivElement;
+  }
+  
+  private openDetailPage(recordId: number): void {
+    window.location.href = `${API_SERVICE_ENDPOINT}/k/${kintone.app.getId()}/show#record=${recordId}`;
   }
 
   public setHeader(headerContent: string): void {
@@ -60,7 +64,7 @@ class ListView {
         text: 'Upload',
       });
       topAction.appendChild(btnOpenPopup);
-      btnOpenPopup.addEventListener('click', () => new Popup().open());
+      btnOpenPopup.addEventListener('click', () => new Popup(ROOT_ID).open());
 
       const header = document.createElement('div');
       header.classList.add('cim-listview-header');
@@ -70,20 +74,21 @@ class ListView {
       content.classList.add('cim-listview-content');
       this.addImageToDOM(cards, content);
       container.appendChild(content);
-      this.root.appendChild(container);
+      this.rootElm.appendChild(container);
     }
   }
 
   private addImageToDOM(cards: any, elm: HTMLDivElement, insertBefore: boolean = false): void {
     for (const card of cards) {
       const imageNewest = this.getImageNewest(card.fcHistoryImages.value);
-      const recordId = card.Record_number.value;
+      const recordId: number = card.Record_number.value;
       const recordElm = new Card().render({
         'src': imageNewest || '',
         'fileName': card.fcFileName.value,
         'id': `image-${recordId}`,
         'unique': recordId
       });
+      recordElm.addEventListener('click', () => this.openDetailPage(recordId));
       insertBefore ? elm.prepend(recordElm) : elm.appendChild(recordElm);
     }
   }
@@ -126,7 +131,7 @@ class ListView {
 
   private getImageNewest(data: any) {
     let result = '';
-    if (!data || data.length === 0) {
+    if (!data) {
       return result;
     }
     const images = JSON.parse(data);

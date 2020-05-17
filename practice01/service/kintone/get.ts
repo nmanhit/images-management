@@ -1,5 +1,4 @@
 import {API_SERVICE_ENDPOINT, API_TOKEN} from '../../config';
-import {CALL_KINTONE_API_ERROR} from '../../constants/message';
 
 function get(url: string, params: any) {
   let action = `${API_SERVICE_ENDPOINT}${url}.json`;
@@ -14,11 +13,7 @@ function get(url: string, params: any) {
       if (xhr.status === 200) {
         resolve(JSON.parse(xhr.responseText));
       } else {
-        reject({
-          error: true,
-          message: CALL_KINTONE_API_ERROR,
-          data: xhr.responseText,
-        });
+        reject(xhr.responseText);
       }
     };
     xhr.send(params);
