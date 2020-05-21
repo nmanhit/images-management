@@ -1,0 +1,21 @@
+.cim-loading{
+  width: 200px;
+  height: 267px;
+  float: left;
+  margin: 20px 20px 20px 0;
+  background-color: #fff;
+  border: 1px dotted #ccc;
+  border-radius: 2px;
+  position: relative;
+}
+
+.cim-loading .cim-loading-image img{
+  width: 50px;
+  max-height: 200px;
+  height: 50px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -25px;
+  margin-top: -25px;
+}

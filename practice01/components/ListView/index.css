@@ -1,19 +1,30 @@
-#btn_open_popup{
-  position: absolute;
-  right: 15px;
+.cim-listview-header {
+  text-align: center;
+  color: #28a745;
+  font-size: 25px;
+  font-weight: bold;
 }
 
 .cim-listview-container{
   min-height: 50vh;
 }
 
-.cim-listview-container .cim-listview-top{
+.cim-listview-container .cim-nav-bar{
   height: 40px;
   width: 100%;
   position: relative;
 }
 
+.cim-listview-container .cim-nav-bar #btn_open_popup{
+  position: absolute;
+  right: 15px;
+  top: 0px;
+}
+
 .cim-listview-content{
-  margin: 20px;
   overflow: auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: calc(100vw - 20px);
 }

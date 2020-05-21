@@ -1,79 +1,88 @@
+import {TITLE_HEADER} from '../../config';
+import Utils from '../../utils/index';
 import {addRecord, getRecordById, uploadFile, updateRecord} from '../../service/ImageManager';
 import {
   POPUP_PLEASE_ENTER_YOUR_FILE_IMAGE,
   POPUP_PLEASE_ENTER_YOUR_FILE_NAME,
   POPUP_FILE_TYPE_IS_NOT_SUPPORTED,
-  POPUP_INPUT_DEFAULT_VALUE
+  POPUP_INPUT_DEFAULT_VALUE,
+  POPUP_INPUT_DEFAULT_TEXT_CHOOSE_FILE
 } from './../../constants/message';
-import {TITLE_HEADER} from '../../config';
-import TextInput from './components/TextInput/index';
+
+import {ListView, DetailView} from '../index';
+import {TextInput, FileInput} from './components/index';
 import Button from '../BaseComponent/Button/index';
+import {ButtonDTO} from '../BaseComponent/Button/types';
+import {HistoryDTO, FileKeyDTO} from '../DetailView/types';
+import {GalleryDTO, RecordDTO} from './types';
 
 import '../Popup/index.css';
-import FileInput from './components/FileInput/index';
-import ListView from '../ListView/index';
-import {fileToBase64} from '../../utils/index';
-
 class Popup {
   protected root: HTMLElement;
-  private recordId : number;
-  constructor(rootId: string, recordId: number = 0) {
-    this.root = document.getElementById(rootId);
+  private recordId: number;
+  constructor(recordId: number = 0) {
+    this.root = document.body;
     this.recordId = recordId;
     this.render();
   }
 
-  getPopupEl() {
-    return this.root.querySelector('.cim-popup-wrapper');
-  }
-
-  open() {
+  public open() {
     const rootPopup = this.getPopupEl();
     rootPopup.classList.add('display-block');
     rootPopup.classList.remove('display-none');
   }
 
-  close() {
+  public close() {
     const rootPopup = this.getPopupEl();
     rootPopup.classList.add('display-none');
     rootPopup.classList.remove('display-block');
   }
 
-  async handleUploading(recordId: number) {
-    const fileName = (this.root.querySelector('#fileNameId') as HTMLInputElement).value;
-    const fileAttachment = (this.root.querySelector('#fileUploadId') as HTMLInputElement).files[0];
-    const params = {
-      'fileName': fileName,
-      'fileAttachment': fileAttachment
-    };
-    if (this.validateData(params)) {
-      const uploadEffect: any = await uploadFile(fileAttachment);
-      const base64 = await fileToBase64(fileAttachment);
-      const fileType = fileAttachment.type;
-      let record: any = {
-        'fcFileName': {'value': params.fileName},
-        'fcFileAttachment': {'value': [{'fileKey': uploadEffect.fileKey}]},
-        'fcHistoryImages': {'value': [{'fileType': fileType, 'createAt': new Date().getTime(), 'base64': base64}]}
-      };
-      if (recordId > 0){
-        const currentRecord = await getRecordById(recordId);
-        const currentHistory = JSON.parse(currentRecord?.fcHistoryImages?.value);
-        record.fcHistoryImages.value = JSON.stringify([...record.fcHistoryImages.value, ...currentHistory]);
-        await updateRecord(recordId, record);
-      } else {
-        record.fcHistoryImages.value = JSON.stringify(record.fcHistoryImages.value);
-        await addRecord(record);
-        new ListView().renderItem();
-      }
-      this.close();
-      return true;
+  public render() {
+    if (this.getPopupEl()) {
+      this.resetPopup();
+    } else {
+      const wrapper = this.createPopupWrapper();
+      const container = this.createPopupContainer();
+      const header = this.createPopupHeader();
+      container.appendChild(header);
+
+      container.appendChild(this.createFileNameInput());
+      wrapper.appendChild(container);
+      container.appendChild(this.createFileInput());
+      container.appendChild(this.createDivMessageError());
+      const footer = this.createButtonUploadAndCancel();
+      container.appendChild(footer);
+      this.root.appendChild(wrapper);
     }
-    return false;
   }
 
-  validateData(params: any) {
-    const file: File = (params.fileAttachment as File);
-    if (!params.fileName) {
+  private getPopupEl(): Element {
+    return this.root.querySelector('.cim-popup-wrapper');
+  }
+
+  private async getDataFromClient() {
+    const fileName = (this.root.querySelector('.file-name-input') as HTMLInputElement).value || '';
+    const file = (this.root.querySelector('.file-upload-class') as HTMLInputElement).files[0];
+    const result: GalleryDTO = {
+      file: file,
+      fcFileName: {value: fileName},
+      fcHistoryImages: {
+        value: [{
+          fileName: fileName,
+          fullName: file?.name,
+          fileType: file?.type,
+          createAt: new Date().getTime().toString(),
+          base64: await Utils.fileToBase64(file)
+        }]
+      }
+    };
+    return result;
+  }
+
+  private validateData(params: GalleryDTO) {
+    const file: File = (params.file as File);
+    if (!params.fcFileName.value && this.recordId > 0) {
       this.setMessage(POPUP_PLEASE_ENTER_YOUR_FILE_NAME);
       return false;
     }
@@ -89,7 +98,57 @@ class Popup {
     return true;
   }
 
-  setMessage(message: string) {
+  private async updateGallery(recordId: number, params: any, history: any) {
+    const data = await getRecordById(recordId);
+    const histories = JSON.parse(data?.fcHistoryImages?.value);
+    params.fcHistoryImages.value = JSON.stringify([...histories, history]);
+    try {
+      await updateRecord(recordId, params);
+      DetailView.getInstance().addRecordAtLocal(({
+        'base64': history.base64,
+        'createAt': history.createAt,
+        'fullName': history.fullName,
+        'fileType': history.fileType,
+        'fileName': history.fileName
+      }) as HistoryDTO);
+    } catch (error) {
+      Utils.handleError(error);
+    }
+  }
+
+  private async addNewGallery(params: any) {
+    try {
+      params.fcHistoryImages.value = JSON.stringify(params.fcHistoryImages.value);
+      await addRecord(params);
+      new ListView().renderItem();
+    } catch (error) {
+      Utils.handleError(error);
+    }
+  }
+
+  private async handleUploading(recordId: number) {
+    try {
+      const dataClient = await this.getDataFromClient();
+      if (this.validateData(dataClient)) {
+        delete (dataClient.file);
+        const history = dataClient.fcHistoryImages.value[0];
+        const blob = new Blob([dataClient.file], {type: history.fileType});
+        const result: FileKeyDTO = await uploadFile(blob, history.fileName);
+        const params: RecordDTO = Object.assign(dataClient, {'fcFileAttachment': {'value': [{'fileKey': result.fileKey}]}}) as RecordDTO;
+        if (recordId > 0) {
+          delete (params.fcFileName);
+          this.updateGallery(recordId, params, history);
+        } else {
+          this.addNewGallery(params);
+        }
+        this.close();
+      }
+    } catch (error) {
+      Utils.handleError(error);
+    }
+  }
+
+  private setMessage(message: string) {
     const divMessage = this.root.querySelector('.cim-popup-message');
     divMessage.innerHTML = '';
     const divDanger = document.createElement('div');
@@ -98,51 +157,79 @@ class Popup {
     divMessage.appendChild(divDanger);
   }
 
-  resetPopup() {
-    (document.getElementById('fileNameId') as HTMLInputElement).value = '';
-    (document.getElementById('fileUploadId') as HTMLInputElement).value = '';
+  private resetPopup() {
+    if (this.recordId === 0) {
+      (document.querySelector('.file-name-input') as HTMLInputElement).value = '';
+    }
+    (document.querySelector('.file-upload-class') as HTMLInputElement).value = '';
   }
 
-  render() {
-    if (!this.getPopupEl()) {
-      const wrapper = document.createElement('div');
-      wrapper.classList.add('cim-popup-wrapper');
+  private chooseFile() {
+    const divFileUpload = (document.querySelector('.file-upload-class')) as HTMLElement;
+    divFileUpload.click();
+  }
 
-      const container = document.createElement('div');
-      container.classList.add('cim-popup-container');
+  private createPopupWrapper(): HTMLDivElement {
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('cim-popup-wrapper');
+    return wrapper;
+  }
 
-      const header = document.createElement('div');
-      header.classList.add('cim-popup-header');
-      header.innerText = TITLE_HEADER.TITLE_POPUP_UPLOAD;
-      container.appendChild(header);
+  private createPopupContainer(): HTMLDivElement {
+    const container = document.createElement('div');
+    container.classList.add('cim-popup-container');
+    return container;
+  }
 
-      const textInput = new TextInput();
-      container.appendChild(textInput.render({'label': 'File Name', 'id': 'fileNameId', 'value': POPUP_INPUT_DEFAULT_VALUE}));
-      wrapper.appendChild(container);
+  private createPopupHeader(): HTMLDivElement {
+    const header = document.createElement('div');
+    header.classList.add('cim-popup-header');
+    header.innerText = TITLE_HEADER.TITLE_POPUP_UPLOAD;
+    return header;
+  }
 
-      const fileInput = new FileInput();
-      container.appendChild(fileInput.render({'label': 'Choose file', 'id': 'fileUploadId'}));
+  private createDivMessageError(): HTMLDivElement {
+    const divMessage = document.createElement('div');
+    divMessage.classList.add('cim-popup-message');
+    return divMessage;
+  }
 
-      const divMessage = document.createElement('div');
-      divMessage.classList.add('cim-popup-message');
-      container.appendChild(divMessage);
+  private createFileNameInput(): HTMLDivElement {
+    return TextInput.render({
+      'label': 'File Name',
+      'class': 'file-name-input',
+      'isShow': this.recordId === 0,
+      'value': POPUP_INPUT_DEFAULT_VALUE
+    });
+  }
 
-      const footer = document.createElement('div');
-      footer.classList.add('cim-popup-footer');
-      container.appendChild(footer);
+  private createFileInput(): HTMLDivElement {
+    const fileInput = FileInput.render({'label': 'File Upload', 'class': 'file-upload-class', 'isShow': false});
+    fileInput.appendChild(this.createInputFileUpload());
+    return fileInput;
+  }
 
-      const btnUpload = new Button().render({'id': 'btn_upload', 'class': 'primary', 'text': 'Upload'});
-      footer.appendChild(btnUpload);
-      btnUpload.addEventListener('click', () => this.handleUploading(this.recordId));
+  private createInputFileUpload(): HTMLDivElement {
+    const divChooseFile = document.createElement('div');
+    divChooseFile.classList.add('cim-popup-choose-file');
+    divChooseFile.innerText = POPUP_INPUT_DEFAULT_TEXT_CHOOSE_FILE;
+    divChooseFile.addEventListener('click', () => this.chooseFile());
+    return divChooseFile;
+  }
 
-      const btnCancel = new Button().render({'id': 'btn_cancel', 'class': 'danger', 'text': 'Cancel'});
-      footer.appendChild(btnCancel);
-      btnCancel.addEventListener('click', () => this.close());
+  private createButtonUploadAndCancel(): HTMLDivElement {
+    const footer = document.createElement('div');
+    footer.classList.add('cim-popup-footer');
+    const dataUploadBtn: ButtonDTO = {'id': 'btn_upload', 'class': 'success', 'text': 'Upload'};
+    const btnUpload = Button.render(dataUploadBtn);
+    footer.appendChild(btnUpload);
+    btnUpload.addEventListener('click', () => this.handleUploading(this.recordId));
 
-      this.root.appendChild(wrapper);
-    } else {
-      this.resetPopup();
-    }
+    const dataBtnCancel: ButtonDTO = {'id': 'btn_cancel', 'class': 'light', 'text': 'Cancel'};
+    const btnCancel = Button.render(dataBtnCancel);
+    footer.appendChild(btnCancel);
+    btnCancel.addEventListener('click', () => this.close());
+    return footer;
   }
 }
 

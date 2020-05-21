@@ -1,10 +1,10 @@
-import {SCROLL_OFFSET} from './config';
-import ListView from './components/ListView/index';
-import DeailView from './components/DetailView/index';
+import {SCROLL_OFFSET, APP_FIELD_CODE} from './config';
+import {ListView, DetailView} from './components/index';
 
 kintone.events.on('app.record.index.show', () => {
   const listView = new ListView();
-  listView.bindingData();
+  listView.init();
+  listView.bind();
   window.onscroll = function() {
     const pageHeight = document.body.scrollHeight;
     const scrollPoint = window.scrollY + window.innerHeight;
@@ -14,12 +14,17 @@ kintone.events.on('app.record.index.show', () => {
   };
 });
 
+function hideFields(fields: string[]) {
+  fields.forEach(field => {
+    kintone.app.record.setFieldShown(field, false);
+  });
+}
+
 kintone.events.on('app.record.detail.show', (event: any) => {
-  kintone.app.record.setFieldShown('fcFileName', false);
-  kintone.app.record.setFieldShown('fcFileAttachment', false);
-  kintone.app.record.setFieldShown('fcHistoryImages', false);
-  const detailSpaceElm = kintone.app.record.getSpaceElement('fcImageDetail');
-  const detailView = new DeailView(detailSpaceElm.getAttribute('id'), event.recordId);
-  detailSpaceElm.appendChild(detailView.createBaseHTML());
-  detailView.bindingData(event.recordId);
+  const fieldsToHide = [APP_FIELD_CODE.FC_FILE_NAME, APP_FIELD_CODE.FC_FILE_ATTACHMENT, APP_FIELD_CODE.FC_HISTORY_IMAGES];
+  hideFields(fieldsToHide);
+  const detailView = DetailView.getInstance(event.recordId);
+  const detailSpaceElm = kintone.app.record.getSpaceElement(APP_FIELD_CODE.FC_IMAGE_DETAIL);
+  detailSpaceElm.appendChild(detailView.init());
+  detailView.bind();
 });

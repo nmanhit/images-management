@@ -1,6 +1,7 @@
 import {get, post, put} from './Kintone/index';
 import {API_URL_FILE, API_URL_RECORD, API_URL_RECORDS} from '../constants/index';
 import {APP_ID, ITEMS_PER_PAGE} from '../config';
+import {FileKeyDTO} from '../components/DetailView/types';
 
 export const addRecord = async (params: any) => {
   const data = {
@@ -22,15 +23,15 @@ export const getRecordById = async (RecordId: number) => {
   return result?.record;
 };
 
-export const getRecords = async (pageNum: number) => {
+export const getRecords = async (pageNum: number, onloadStart?: Function, onloadEnd?: Function) => {
   const offset = pageNum * ITEMS_PER_PAGE;
   const query = `order by $id desc limit ${ITEMS_PER_PAGE} offset ${offset}`;
   const data = {
     app: APP_ID,
     query: query
   };
-  const result = await get(API_URL_RECORDS, data);
-  return result;
+  const result = await get(API_URL_RECORDS, data, onloadStart, onloadEnd);
+  return result?.records;
 };
 
 export const getNewestRecord = async () => {
@@ -40,7 +41,8 @@ export const getNewestRecord = async () => {
     query: query
   };
   const result = await get(API_URL_RECORDS, data);
-  return result;
+  const total = result?.records?.length;
+  return total > 0 ? result?.records[0] : null;
 };
 
 export const updateRecord = async (recordId: number, params: any) => {
@@ -55,19 +57,9 @@ export const updateRecord = async (recordId: number, params: any) => {
   return result;
 };
 
-export const uploadFile = async (file: File) => {
-  const blob = new Blob([file], {type: file.type});
+export const uploadFile = async (blob: Blob, fileName: string) => {
   const formData = new FormData();
-  formData.append('file', blob, file.name);
+  formData.append('file', blob, fileName);
   const result = await post(API_URL_FILE, formData, false);
-  return result;
-};
-
-export const dowloadFile = async (fileKey: any) => {
-  await post(API_URL_FILE, {fileKey: fileKey}).then((resp: any) => {
-    const blob = new Blob([resp.response]);
-    const url = window.URL || window.webkitURL;
-    const blobUrl = url.createObjectURL(blob);
-    return resp;
-  });
+  return result as FileKeyDTO;
 };

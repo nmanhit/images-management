@@ -1,145 +1,152 @@
-import {ROOT_ID, API_SERVICE_ENDPOINT} from '../../config';
+import {ROOT_ID, API_SERVICE_ENDPOINT, TITLE_HEADER} from '../../config';
+import Utils from '../../utils/index';
 
 import {getRecords, getNewestRecord} from '../../service/ImageManager';
 import Button from '../BaseComponent/Button/index';
 import Popup from '../Popup/index';
 import Card from './components/Card/index';
+import Loading from './components/Loading/index';
 
 import './index.css';
+import {CardDTO} from './types';
 
 class ListView {
   private rootElm: HTMLElement;
-  private pageNum: number;
+  private pageIdx: number;
   private isLoading: boolean;
 
   constructor() {
     this.rootElm = document.getElementById(ROOT_ID);
-    this.pageNum = 0;
+    this.pageIdx = 0;
     this.isLoading = false;
   }
 
-  private getHeaderEl(): HTMLDivElement {
-    return this.rootElm.querySelector('.cim-listview-header') as HTMLDivElement;
+  public async renderItem() {
+    const result = await getNewestRecord();
+    if (result) {
+      this.getListViewContentEl().prepend(this.createCardItem(result));
+    }
+  }
+
+  public init() {
+    const container = this.createDivContainer();
+    const navBar = this.createNavBar();
+    container.appendChild(navBar);
+    navBar.appendChild(this.createHeader());
+    navBar.appendChild(this.createButtonUpload());
+    container.appendChild(this.createDivContent());
+    this.rootElm.appendChild(container);
+  }
+
+  public async bind() {
+    await this.showCards(this.pageIdx);
+  }
+
+  public async lazyLoading() {
+    if (this.pageIdx > -1 && this.isLoading === false) {
+      await this.showCards(this.pageIdx);
+    }
   }
 
   private getListViewContentEl() {
     return this.rootElm.querySelector('.cim-listview-content') as HTMLDivElement;
   }
-  
+
   private openDetailPage(recordId: number): void {
     window.location.href = `${API_SERVICE_ENDPOINT}/k/${kintone.app.getId()}/show#record=${recordId}`;
   }
 
-  public setHeader(headerContent: string): void {
-    this.getHeaderEl().textContent = headerContent;
-  }
-
-  public async bindingData(pageNum?: number) {
-    const result = await getRecords(pageNum | 0);
-    if (result?.records) {
-      await this.render(result.records);
+  private onloadStart() {
+    const divContain = this.getListViewContentEl();
+    if (divContain) {
+      divContain.appendChild(Loading.render());
     }
   }
 
-  public async renderItem() {
-    const result = await getNewestRecord();
-    if (result?.records) {
-      await this.render(result.records, true);
-    }
+  private onloadEnd() {
+    Loading.remove();
   }
 
-  private async render(cards: any, addFirst: boolean = false) {
-    if (addFirst) {
-      this.addImageToDOM(cards, this.getListViewContentEl(), true);
+  private createButtonUpload() {
+    const buttonUpload = Button.render({
+      id: 'btn_open_popup',
+      class: 'success',
+      text: 'Upload',
+    });
+    buttonUpload.addEventListener('click', () => new Popup().open());
+    return buttonUpload;
+  }
+
+  private createHeader() {
+    const header = document.createElement('div');
+    header.classList.add('cim-listview-header');
+    header.innerText = TITLE_HEADER.TITLE_LIST_IMAGE;
+    return header;
+  }
+
+  private createDivContainer() {
+    const container = document.createElement('div');
+    container.classList.add('cim-listview-container');
+    return container;
+  }
+
+  private createNavBar() {
+    const navBar = document.createElement('div');
+    navBar.classList.add('cim-nav-bar');
+    return navBar;
+  }
+
+  private createDivContent() {
+    const content = document.createElement('div');
+    content.classList.add('cim-listview-content');
+    return content;
+  }
+
+  private createCardItem(item: any) {
+    const histories = item?.fcHistoryImages?.value || '';
+    const fileName = item?.fcFileName?.value || '';
+    const uniqueId: number = item?.Record_number?.value || 0;
+    const time = item?.Created_datetime?.value || '';
+    const createdAt: string = Utils.utcToString(time);
+    const card: CardDTO = {
+      src: this.getCardNewest(histories),
+      fileName,
+      uniqueId,
+      createdAt
+    };
+    const divCard = Card.render(card);
+    divCard.addEventListener('click', () => this.openDetailPage(uniqueId));
+    return divCard;
+  }
+
+  private async showCards(pageIdx: number) {
+    this.isLoading = true;
+    const result = await getRecords(pageIdx, () => {
+      this.onloadStart();
+    }, () => {
+      this.onloadEnd();
+    });
+    if (!result || result.length === 0) {
+      this.pageIdx = -1;
     } else {
-      const container = document.createElement('div');
-      container.classList.add('cim-listview-container');
-
-      const topAction = document.createElement('div');
-      topAction.classList.add('cim-listview-top');
-      container.appendChild(topAction);
-      const btnOpenPopup = new Button().render({
-        id: 'btn_open_popup',
-        class: 'primary',
-        text: 'Upload',
-      });
-      topAction.appendChild(btnOpenPopup);
-      btnOpenPopup.addEventListener('click', () => new Popup(ROOT_ID).open());
-
-      const header = document.createElement('div');
-      header.classList.add('cim-listview-header');
-      container.appendChild(header);
-
-      const content = document.createElement('div');
-      content.classList.add('cim-listview-content');
-      this.addImageToDOM(cards, content);
-      container.appendChild(content);
-      this.rootElm.appendChild(container);
-    }
-  }
-
-  private addImageToDOM(cards: any, elm: HTMLDivElement, insertBefore: boolean = false): void {
-    for (const card of cards) {
-      const imageNewest = this.getImageNewest(card.fcHistoryImages.value);
-      const recordId: number = card.Record_number.value;
-      const recordElm = new Card().render({
-        'src': imageNewest || '',
-        'fileName': card.fcFileName.value,
-        'id': `image-${recordId}`,
-        'unique': recordId
-      });
-      recordElm.addEventListener('click', () => this.openDetailPage(recordId));
-      insertBefore ? elm.prepend(recordElm) : elm.appendChild(recordElm);
-    }
-  }
-
-  private async bindingRecords(pageNum: number) {
-    const cards: HTMLDivElement[] = [];
-    const result = await getRecords(pageNum);
-    if (!result || !result.records) {
-      return cards;
-    }
-    for (const item of result.records) {
-      if (item) {
-        const imageNewest = this.getImageNewest(item.fcHistoryImages.value);
-        const recordId = item.Record_number.value;
-        cards.push(new Card().render({
-          'src': imageNewest || '',
-          'fileName': item.fcFileName.value,
-          'id': `image-${recordId}`,
-          'unique': recordId
-        }));
+      this.pageIdx++;
+      for (const item of result) {
+        this.getListViewContentEl().append(this.createCardItem(item));
       }
     }
-    return cards;
+    this.isLoading = false;
   }
 
-  public async lazyLoading() {
-    if (this.pageNum > -1 && this.isLoading === false) {
-      this.pageNum++;
-      this.isLoading = true;
-      const cards = await this.bindingRecords(this.pageNum);
-      if (cards.length === 0) {
-        this.pageNum = -1;
-      }
-      for (const card of cards) {
-        this.getListViewContentEl().append(card);
-      }
-      this.isLoading = false;
+  private getCardNewest(histories: string) {
+    if (!histories) {
+      return '';
     }
-  }
-
-  private getImageNewest(data: any) {
-    let result = '';
-    if (!data) {
-      return result;
+    const historyArrayObj = JSON.parse(histories);
+    const totalFiles = historyArrayObj?.length || 0;
+    if (totalFiles >= 0) {
+      return historyArrayObj[totalFiles - 1].base64;
     }
-    const images = JSON.parse(data);
-    if (!images[0] || !images[0].base64) {
-      return result;
-    }
-    result = images[0].base64;
-    return result;
+    return '';
   }
 }
 export default ListView;

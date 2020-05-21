@@ -1,25 +1,35 @@
-.cim-card{
-  width: 200px;
-  float: left;
-  margin: 20px 20px 20px 0;
-  background-color: #FFCC00;
-  border: 1px solid #ccc;
-  border-radius: 2px;
+.cim-card {
+  flex: 0 1 14.285714%;
 }
 
-.cim-card .cim-card-image img{
-  width: 200px;
-  max-height: 200px;
+.cim-card .cim-card-group {
+  padding: 15px;
+}
+
+.cim-card .cim-card-group .cim-card-item {
+  border: 1px dotted #ccc;
+  background-color: #28A744;
+}
+
+.cim-card .cim-card-group .cim-card-item .cim-card-image img{
+  width: 100%;
   height: 200px;
 }
 
-.cim-card .cim-card-file-name{
+.cim-card .cim-card-group .cim-card-item .cim-card-file-name{
   color: #fff;
   max-height: 30px;
   padding: 10px;
-  height: 30px;
+  height: 20px;
   text-overflow: ellipsis;
   white-space: nowrap;
-  width: 190px;
   overflow: hidden;
+}
+
+.cim-card .cim-card-group .cim-card-item .cim-card-created-at{
+  font-size: 11px;
+  text-align: right;
+  color: #fff;
+  margin-right: 10px;
+  margin-bottom: 5px;
 }

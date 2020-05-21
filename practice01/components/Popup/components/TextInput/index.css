@@ -10,10 +10,30 @@
     width: 400px;
 }
 
+.cim-popup-container .cim-popup-choose-file{
+  width: 405px;
+  height: 60px;
+  border: 1px dotted #ccc;
+  margin-left: 83px;
+  line-height: 60px;
+  text-align: center;
+  font-size: 13px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cim-popup-container .label-file {
+  float: left;
+}
+
 .cim-popup-container .cim-popup-footer{
   height: 50px;
   float: right;
   position: absolute;
   right: 20px;
   bottom: 10px;
+}
+
+.cim-popup-container .cim-popup-footer .btn{
+  margin-left: 15px;
 }

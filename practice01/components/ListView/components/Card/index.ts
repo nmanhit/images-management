@@ -1,33 +1,43 @@
 import './index.css';
+import {CardDTO} from '../../types';
 
-class Card {
-  public render(params?: any) {
-    const opts = {
-      ...{
-        'src': '',
-        'fileName': '',
-        'id': 'card_id',
-        'unique': ''
-      },
-      ...params
-    };
-    const container = document.createElement('div');
-    container.classList.add('cim-card');
-    container.setAttribute('data-id', opts.unique);
+function render(params?: CardDTO) {
+  const opts = {
+    ...{
+      'src': '',
+      'fileName': '',
+      'createdAt': '',
+      'uniqueId': 0
+    },
+    ...params
+  };
+  const container = document.createElement('div');
+  container.classList.add('cim-card');
+  container.setAttribute('data-id', opts.uniqueId.toString());
 
-    const card = document.createElement('div');
-    card.classList.add('cim-card-image');
-    const image = document.createElement('img');
-    image.setAttribute('src', opts.src);
-    card.appendChild(image);
+  const group = document.createElement('div');
+  group.classList.add('cim-card-group');
+  const item = document.createElement('div');
+  item.classList.add('cim-card-item');
 
-    const fileName = document.createElement('div');
-    fileName.innerText = opts.fileName;
-    fileName.classList.add('cim-card-file-name');
+  const card = document.createElement('div');
+  card.classList.add('cim-card-image');
+  const image = document.createElement('img');
+  image.setAttribute('src', opts.src);
+  card.appendChild(image);
 
-    container.appendChild(card);
-    container.appendChild(fileName);
-    return container;
-  }
+  const fileName = document.createElement('div');
+  fileName.innerText = opts.fileName;
+  fileName.classList.add('cim-card-file-name');
+
+  const createdAt = document.createElement('div');
+  createdAt.innerText = opts.createdAt;
+  createdAt.classList.add('cim-card-created-at');
+  item.appendChild(card);
+  item.appendChild(fileName);
+  item.appendChild(createdAt);
+  group.appendChild(item);
+  container.appendChild(group);
+  return container;
 }
-export default Card;
+export default {render};

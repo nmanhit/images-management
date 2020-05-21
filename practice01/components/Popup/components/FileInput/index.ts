@@ -1,49 +1,31 @@
 import './index.css';
 
-class FileInput {
-  private popupWrapper: HTMLElement;
-  constructor() {
-    this.popupWrapper = document.getElementById('cim-popup-wrapper');
+function render(params?: any) {
+  const opts = {
+    ...{
+      'label': '',
+      'class': 'file-input-class',
+      'isShow': true
+    },
+    ...params
+  };
+  const container = document.createElement('div');
+  container.classList.add('cim-input-group');
+  if (opts.label) {
+    const label = document.createElement('label');
+    label.classList.add('label-file');
+    label.innerText = opts.label;
+    container.appendChild(label);
   }
-
-  public render(params?: any) {
-    const opts = {
-      ...{
-        'label': '',
-        'id': 'file_id'
-      },
-      ...params
-    };
-    const container = document.createElement('div');
-    container.classList.add('cim-input-group');
-    if (opts.label) {
-      const label = document.createElement('label');
-      label.innerText = opts.label;
-      container.appendChild(label);
-    }
-    const input = document.createElement('input');
-    input.setAttribute('id', opts.id);
-    input.setAttribute('type', 'file');
-    input.classList.add('cim-file-input');
-    container.appendChild(input);
-    return container;
+  const input = document.createElement('input');
+  input.setAttribute('type', 'file');
+  input.classList.add('cim-file-input');
+  input.classList.add(opts.class);
+  if (opts.isShow === false) {
+    input.classList.add('display-none');
   }
-
-  public close() {
-    this.popupWrapper
-      .classList
-      .add('display-none');
-  }
-
-  public open() {
-    this.popupWrapper
-      .classList
-      .add('display-block');
-  }
-
-  public fileToBlob(file: File) {
-    return file;
-  }
+  container.appendChild(input);
+  return container;
 }
 
-export default FileInput;
+export default {render};
