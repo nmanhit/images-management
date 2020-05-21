@@ -29,11 +29,11 @@ function get(url: string, params: any, onloadStart?: any, onloadEnd?: any) {
 function toQueryString(params: any) {
   const parts = [];
   for (const i in params) {
-    // eslint-disable-next-line no-prototype-builtins
-    if (params.hasOwnProperty(i)) {
+    if (Object.prototype.hasOwnProperty.call(params, i)) {
       parts.push(encodeURIComponent(i) + '=' + encodeURIComponent(params[i]));
     }
   }
+
   return parts.join('&');
 }
 
