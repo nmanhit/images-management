@@ -14,4 +14,5 @@ interface RestoreDTO {
   'fcFileAttachment': {'value': [{'fileKey': string}]};
   'fcHistoryImages': {'value': string};
 }
+
 export {HistoryDTO, FileKeyDTO, RestoreDTO};

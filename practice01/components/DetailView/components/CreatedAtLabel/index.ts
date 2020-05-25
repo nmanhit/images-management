@@ -5,4 +5,5 @@ function render(createAt: string) {
   td.innerText = createAt;
   return td;
 }
+
 export default {render};

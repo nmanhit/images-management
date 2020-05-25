@@ -4,19 +4,20 @@ import './index.css';
 function render(params: ButtonDTO): HTMLButtonElement {
   const opts: ButtonDTO = {
     ...{
+      'id': 'button_id',
       'class': 'primary',
       'text': 'Button',
-      'id': 'button_id',
       'dataIndex': 0
     },
     ...params
   };
   const container = document.createElement('button');
+  container.setAttribute('id', opts.id);
   container.classList.add('btn');
   container.classList.add(opts.class);
-  container.setAttribute('id', opts.id);
   container.setAttribute('data-index', opts.dataIndex.toString());
   container.innerText = opts.text;
   return container;
 }
+
 export default {render};

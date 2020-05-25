@@ -12,6 +12,8 @@ interface GalleryDTO {
   };
 }
 interface RecordDTO {
+  'Record_number'?: {'value': number};
+  'Created_datetime'?: {'value': string};
   'fcFileName': {'value': string};
   'fcFileAttachment': {'value': [{'fileKey': string}]};
   'fcHistoryImages': {

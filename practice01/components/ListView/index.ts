@@ -9,6 +9,7 @@ import Loading from './components/Loading/index';
 
 import './index.css';
 import {CardDTO} from './types';
+import {RecordDTO} from '../Popup/types';
 
 class ListView {
   private rootElm: HTMLElement;
@@ -102,14 +103,14 @@ class ListView {
     return content;
   }
 
-  private createCardItem(item: any) {
+  private createCardItem(item: RecordDTO) {
     const histories = item?.fcHistoryImages?.value || '';
     const fileName = item?.fcFileName?.value || '';
     const uniqueId: number = item?.Record_number?.value || 0;
     const time = item?.Created_datetime?.value || '';
     const createdAt: string = Utils.utcToString(time);
     const card: CardDTO = {
-      src: this.getCardNewest(histories),
+      src: this.getCardNewest(histories.toString()),
       fileName,
       uniqueId,
       createdAt
