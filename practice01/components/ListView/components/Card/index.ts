@@ -1,5 +1,10 @@
+import {API_SERVICE_ENDPOINT} from '../../../../config';
 import './index.css';
 import {CardDTO} from '../../types';
+
+function openDetailPage(recordId: number): void {
+  window.location.href = `${API_SERVICE_ENDPOINT}/k/${kintone.app.getId()}/show#record=${recordId}`;
+}
 
 function render(params?: CardDTO) {
   const opts = {
@@ -24,6 +29,7 @@ function render(params?: CardDTO) {
   card.classList.add('cim-card-image');
   const image = document.createElement('img');
   image.setAttribute('src', opts.src);
+  image.addEventListener('click', () => openDetailPage(opts.uniqueId));
   card.appendChild(image);
 
   const fileName = document.createElement('div');

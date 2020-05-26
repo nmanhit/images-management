@@ -1,7 +1,9 @@
 interface GalleryDTO {
   'file'?: File;
   'fcFileName': {'value': string};
-  'fcHistoryImages'?: {'value': [HistoryImageDTO]};
+  'fcHistoryImages'?: {
+    'value': [HistoryImageDTO] | string;
+  };
 }
 interface RecordDTO {
   'Record_number'?: {'value': number};

@@ -14,8 +14,8 @@ import {ListView, DetailView} from '../index';
 import {TextInput, FileInput} from './components/index';
 import Button from '../BaseComponent/Button/index';
 import {ButtonDTO} from '../BaseComponent/Button/types';
-import {HistoryDTO, FileKeyDTO} from '../DetailView/types';
-import {GalleryDTO, RecordDTO} from './types';
+import {FileKeyDTO} from '../DetailView/types';
+import {GalleryDTO, RecordDTO, HistoryImageDTO} from './types';
 
 import '../Popup/index.css';
 class Popup {
@@ -138,11 +138,11 @@ class Popup {
     try {
       const dataClient = await this.getDataFromClient();
       if (this.validateData(dataClient)) {
-        const history = dataClient.fcHistoryImages.value[0];
+        const history = dataClient.fcHistoryImages.value[0] as HistoryImageDTO;
         const blob = new Blob([dataClient.file], {type: history.fileType});
         const result: FileKeyDTO = await uploadFileAttachment(blob, history.fileName);
         delete (dataClient.file);
-        const params: RecordDTO = Object.assign(dataClient, {'fcFileAttachment': {'value': [{'fileKey': result.fileKey}]}}) as RecordDTO;
+        const params: RecordDTO = Object.assign(dataClient, {'fcFileAttachment': {'value': [{'fileKey': result.fileKey}]}} as RecordDTO);
         if (recordId > 0) {
           delete (params.fcFileName);
           this.updateGallery(recordId, params, history);

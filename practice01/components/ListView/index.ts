@@ -116,7 +116,6 @@ class ListView {
       createdAt
     };
     const divCard = Card.render(card);
-    divCard.addEventListener('click', () => this.openDetailPage(uniqueId));
     return divCard;
   }
 
