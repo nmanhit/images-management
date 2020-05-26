@@ -10,11 +10,12 @@
     text-align: center;
     cursor: pointer;
 }
+
 .cim-detailview-table .detail-record .row .btn{
     margin-left: 15px;
 }
 
-.cim-detailview-table .detail-record .row.newest .btn{
+.cim-detailview-table .detail-record .row.newest .btn.danger{
     display: none;
 }
 
@@ -25,4 +26,8 @@
 .cim-detailview-table .detail-record .row.newest .text-current{
     display: block;
     margin-left: 15px;
+    width: 80px;
+    float: left;
+    font-size: 11px;
+    line-height: 40px;
 }

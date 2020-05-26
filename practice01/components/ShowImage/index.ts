@@ -53,7 +53,6 @@ class ShowImage {
     (document.querySelector('.show-image-large img') as HTMLImageElement).src = this.image;
   }
 
-
   private createPopupWrapper(): HTMLDivElement {
     const wrapper = document.createElement('div');
     wrapper.classList.add('cim-show-image-wrapper');

@@ -112,4 +112,9 @@ function resizeImage(source: string) {
   });
 }
 
-export default {timestampToString, utcToString, fileToBase64, b64toBlob, handleError, resizeImage};
+function humanFileSize(size: number) {
+  const i = Math.floor(Math.log(size) / Math.log(1024));
+  return (size / (Math.pow(1024, i))).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+}
+
+export default {timestampToString, utcToString, fileToBase64, b64toBlob, handleError, resizeImage, humanFileSize};

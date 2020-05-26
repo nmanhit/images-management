@@ -1,7 +1,7 @@
 import {TITLE_HEADER} from '../../config';
 import Utils from '../../utils/index';
 import {addRecord, getRecordById, updateRecord} from '../../service/RecordManager';
-import {uploadFile} from '../../service/ImageManager';
+import {uploadFileAttachment} from '../../service/ImageManager';
 import {
   POPUP_PLEASE_ENTER_YOUR_FILE_IMAGE,
   POPUP_PLEASE_ENTER_YOUR_FILE_NAME,
@@ -19,7 +19,7 @@ import {GalleryDTO, RecordDTO} from './types';
 
 import '../Popup/index.css';
 class Popup {
-  protected root: HTMLElement;
+  private root: HTMLElement;
   private recordId: number;
   constructor(recordId: number = 0) {
     this.root = document.body;
@@ -71,9 +71,9 @@ class Popup {
     const file = (this.root.querySelector('.file-upload-class') as HTMLInputElement).files[0];
     let fileBase64 = '';
     let resize = '';
-    if (this.isTypeImage(file.type)) {
+    if (file && this.isTypeImage(file.type)) {
       fileBase64 = await Utils.fileToBase64(file) as string;
-      resize = await Utils.resizeImage(fileBase64 as string) as string;
+      resize = await Utils.resizeImage(fileBase64) as string;
     }
     const result: GalleryDTO = {
       file: file,
@@ -93,7 +93,7 @@ class Popup {
 
   private validateData(params: GalleryDTO) {
     const file: File = (params.file as File);
-    if (!params.fcFileName.value && this.recordId > 0) {
+    if (!params.fcFileName.value && this.recordId === 0) {
       this.setMessage(POPUP_PLEASE_ENTER_YOUR_FILE_NAME);
       return false;
     }
@@ -140,7 +140,7 @@ class Popup {
       if (this.validateData(dataClient)) {
         const history = dataClient.fcHistoryImages.value[0];
         const blob = new Blob([dataClient.file], {type: history.fileType});
-        const result: FileKeyDTO = await uploadFile(blob, history.fileName);
+        const result: FileKeyDTO = await uploadFileAttachment(blob, history.fileName);
         delete (dataClient.file);
         const params: RecordDTO = Object.assign(dataClient, {'fcFileAttachment': {'value': [{'fileKey': result.fileKey}]}}) as RecordDTO;
         if (recordId > 0) {
@@ -166,15 +166,27 @@ class Popup {
   }
 
   private resetPopup() {
-    if (this.recordId === 0) {
+    if (this.recordId > 0) {
       (document.querySelector('.file-name-input') as HTMLInputElement).value = '';
+    } else {
+      (document.querySelector('.file-name-input') as HTMLInputElement).value = POPUP_INPUT_DEFAULT_VALUE;
     }
     (document.querySelector('.file-upload-class') as HTMLInputElement).value = '';
+    document.querySelector('.cim-popup-message').innerHTML = '';
+    (this.root.querySelector('.cim-popup-choose-file') as HTMLDivElement).innerText = POPUP_INPUT_DEFAULT_TEXT_CHOOSE_FILE;
   }
 
   private chooseFile() {
     const divFileUpload = (document.querySelector('.file-upload-class')) as HTMLElement;
     divFileUpload.click();
+    (this.root.querySelector('.file-upload-class') as HTMLInputElement).onchange = (e: Event) => {
+      const file = (e.target as HTMLInputElement).files[0] || null;
+      if (file) {
+        const fileName = file.name;
+        const fileSize = Utils.humanFileSize(file.size);
+        (this.root.querySelector('.cim-popup-choose-file') as HTMLDivElement).innerText = `${fileName} | ${fileSize}`;
+      }
+    };
   }
 
   private createPopupWrapper(): HTMLDivElement {

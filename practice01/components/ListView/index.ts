@@ -9,7 +9,7 @@ import Loading from './components/Loading/index';
 
 import './index.css';
 import {CardDTO} from './types';
-import {RecordDTO} from '../Popup/types';
+import {RecordDTO, HistoryImageDTO} from '../Popup/types';
 
 class ListView {
   private rootElm: HTMLElement;
@@ -110,7 +110,7 @@ class ListView {
     const time = item?.Created_datetime?.value || '';
     const createdAt: string = Utils.utcToString(time);
     const card: CardDTO = {
-      src: this.getCardNewest(histories.toString()),
+      src: this.getDataImg(histories),
       fileName,
       uniqueId,
       createdAt
@@ -138,13 +138,13 @@ class ListView {
     this.isLoading = false;
   }
 
-  private getCardNewest(histories: string) {
+  private getDataImg(histories: string) {
     if (!histories) {
       return '';
     }
     const historyArrayObj = JSON.parse(histories);
-    const totalFiles = historyArrayObj?.length || 0;
-    if (totalFiles >= 0) {
+    const totalFiles = historyArrayObj.length;
+    if (totalFiles > 0) {
       return historyArrayObj[totalFiles - 1].base64;
     }
     return '';

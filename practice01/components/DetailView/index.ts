@@ -1,7 +1,7 @@
 import Utils from '../../utils/index';
 import {THUMBNAIL, CREATED_AT} from '../../constants/message';
 import {getRecordById, updateRecord} from '../../service/RecordManager';
-import {uploadFile, downloadAttachFile} from '../../service/ImageManager';
+import {uploadFileAttachment, downloadFileAttachment} from '../../service/ImageManager';
 import Button from '../BaseComponent/Button/index';
 import Popup from '../Popup/index';
 import {Thumbnail, CreatedAtLabel, RestoreButton, DownloadButton} from './components/index';
@@ -137,8 +137,8 @@ class DetailView {
     try {
       history.createAt = new Date().getTime().toString();
       this.histories.push(history);
-      const {blob} = await downloadAttachFile(fileAttachment.fileKey);
-      const upload: FileKeyDTO = await uploadFile(blob, fileAttachment.name);
+      const {blob} = await downloadFileAttachment(fileAttachment.fileKey);
+      const upload: FileKeyDTO = await uploadFileAttachment(blob, fileAttachment.name);
       const fileKey = upload?.fileKey || '';
       this.fileAttachments.value.push({'fileKey': fileKey});
       const record: RestoreDTO = {
@@ -155,7 +155,7 @@ class DetailView {
   private async dowloadImage(fileAttachment: FileKeyDTO, fullName: string) {
     if (fileAttachment) {
       try {
-        const file = await downloadAttachFile(fileAttachment.fileKey);
+        const file = await downloadFileAttachment(fileAttachment.fileKey);
         this.createElmDownloadFile(file.blobUrl, fullName);
       } catch (error) {
         Utils.handleError(error);
@@ -184,7 +184,7 @@ class DetailView {
   }
 
   private async showALargerImage(fileAttachment: FileKeyDTO) {
-    const {blob} = await downloadAttachFile(fileAttachment.fileKey);
+    const {blob} = await downloadFileAttachment(fileAttachment.fileKey);
     const fileBase64: string = await Utils.fileToBase64(blob) as string;
     new ShowImage(fileBase64).open();
   }
