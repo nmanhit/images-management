@@ -1,7 +1,7 @@
 import {ROOT_ID, API_SERVICE_ENDPOINT, TITLE_HEADER} from '../../config';
 import Utils from '../../utils/index';
 
-import {getRecords, getNewestRecord} from '../../service/ImageManager';
+import {getRecords, getNewestRecord} from '../../service/RecordManager';
 import Button from '../BaseComponent/Button/index';
 import Popup from '../Popup/index';
 import Card from './components/Card/index';

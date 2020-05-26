@@ -1,4 +1,5 @@
 import {SOMETHING_WENT_WRONG} from '../constants/message';
+import {RESIZE_IMAGE} from '../config';
 
 function timestampToString(timestamp: string | number) {
   if (!timestamp) {
@@ -54,7 +55,7 @@ function formatDate(current: Date) {
   return `${fullDate} ${fullTime}`;
 }
 
-function fileToBase64(file: File) {
+function fileToBase64(file: File | Blob) {
   return new Promise((resolve) => {
     if (!file) {
       resolve('');
@@ -90,4 +91,25 @@ function handleError(error?: string) {
   }
 }
 
-export default {timestampToString, utcToString, fileToBase64, b64toBlob, handleError};
+function resizeImage(source: string) {
+  return new Promise((resolve) => {
+    if (!source) {
+      resolve('');
+    }
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = RESIZE_IMAGE.WIDTH;
+    canvas.height = RESIZE_IMAGE.HEIGHT;
+    const image = new Image();
+    image.src = source;
+    image.onload = function(e) {
+      ctx.drawImage(image,
+        0, 0, image.width, image.height,
+        0, 0, canvas.width, canvas.height
+      );
+      resolve(canvas.toDataURL());
+    };
+  });
+}
+
+export default {timestampToString, utcToString, fileToBase64, b64toBlob, handleError, resizeImage};

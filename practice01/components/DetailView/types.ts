@@ -6,13 +6,18 @@ interface HistoryDTO {
   'fileType'?: string;
 }
 
+interface FileAttachmentDTO {
+  'value': [FileKeyDTO];
+}
+
 interface FileKeyDTO {
   'fileKey': string;
+  'name'?: string;
 }
 
 interface RestoreDTO {
-  'fcFileAttachment': {'value': [{'fileKey': string}]};
+  'fcFileAttachment': FileAttachmentDTO;// {'value': [{'fileKey': string}]};
   'fcHistoryImages': {'value': string};
 }
 
-export {HistoryDTO, FileKeyDTO, RestoreDTO};
+export {HistoryDTO, FileAttachmentDTO, FileKeyDTO, RestoreDTO};

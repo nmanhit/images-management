@@ -13,5 +13,10 @@ export enum APP_FIELD_CODE {
 export enum TITLE_HEADER {
   TITLE_LIST_IMAGE = 'Images Management',
   TITLE_POPUP_UPLOAD = 'Upload Image',
-  TITLE_POPUP_RESTORE = 'Restore Image'
+  TITLE_POPUP_RESTORE = 'Restore Image',
+  TITLE_POPUP_VIEW_IMAGE = '',
+}
+export enum RESIZE_IMAGE {
+  WIDTH = 150,
+  HEIGHT = 150
 }

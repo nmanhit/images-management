@@ -4,7 +4,6 @@ import './index.css';
 function render(params: ButtonDTO): HTMLButtonElement {
   const opts: ButtonDTO = {
     ...{
-      'id': 'button_id',
       'class': 'primary',
       'text': 'Button',
       'dataIndex': 0
@@ -12,7 +11,9 @@ function render(params: ButtonDTO): HTMLButtonElement {
     ...params
   };
   const container = document.createElement('button');
-  container.setAttribute('id', opts.id);
+  if (opts.id) {
+    container.setAttribute('id', opts.id);
+  }
   container.classList.add('btn');
   container.classList.add(opts.class);
   container.setAttribute('data-index', opts.dataIndex.toString());

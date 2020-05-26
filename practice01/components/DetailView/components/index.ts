@@ -1,5 +1,6 @@
 import Thumbnail from './Thumbnail/index';
 import CreatedAtLabel from './CreatedAtLabel/index';
-import ActionRestore from './ActionRestore/index';
+import RestoreButton from './RestoreButton/index';
+import DownloadButton from './DownloadButton/index';
 
-export {Thumbnail, CreatedAtLabel, ActionRestore};
+export {Thumbnail, CreatedAtLabel, RestoreButton, DownloadButton};

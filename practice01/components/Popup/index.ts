@@ -1,6 +1,7 @@
 import {TITLE_HEADER} from '../../config';
 import Utils from '../../utils/index';
-import {addRecord, getRecordById, uploadFile, updateRecord} from '../../service/ImageManager';
+import {addRecord, getRecordById, updateRecord} from '../../service/RecordManager';
+import {uploadFile} from '../../service/ImageManager';
 import {
   POPUP_PLEASE_ENTER_YOUR_FILE_IMAGE,
   POPUP_PLEASE_ENTER_YOUR_FILE_NAME,
@@ -61,9 +62,19 @@ class Popup {
     return this.root.querySelector('.cim-popup-wrapper');
   }
 
+  private isTypeImage(fileType: string) {
+    return fileType.match('image.*');
+  }
+
   private async getDataFromClient() {
     const fileName = (this.root.querySelector('.file-name-input') as HTMLInputElement).value || '';
     const file = (this.root.querySelector('.file-upload-class') as HTMLInputElement).files[0];
+    let fileBase64 = '';
+    let resize = '';
+    if (this.isTypeImage(file.type)) {
+      fileBase64 = await Utils.fileToBase64(file) as string;
+      resize = await Utils.resizeImage(fileBase64 as string) as string;
+    }
     const result: GalleryDTO = {
       file: file,
       fcFileName: {value: fileName},
@@ -73,7 +84,7 @@ class Popup {
           fullName: file?.name,
           fileType: file?.type,
           createAt: new Date().getTime().toString(),
-          base64: await Utils.fileToBase64(file)
+          base64: resize
         }]
       }
     };
@@ -91,7 +102,7 @@ class Popup {
       this.setMessage(POPUP_PLEASE_ENTER_YOUR_FILE_IMAGE);
       return false;
     }
-    if (!file.type.match('image.*')) {
+    if (!this.isTypeImage(file.type)) {
       this.setMessage(POPUP_FILE_TYPE_IS_NOT_SUPPORTED);
       return false;
     }
@@ -100,17 +111,14 @@ class Popup {
 
   private async updateGallery(recordId: number, params: any, history: any) {
     const data = await getRecordById(recordId);
+    const currentFileAttachment = data?.fcFileAttachment?.value;
+    const newFileAttachment = params.fcFileAttachment.value;
     const histories = JSON.parse(data?.fcHistoryImages?.value);
     params.fcHistoryImages.value = JSON.stringify([...histories, history]);
+    params.fcFileAttachment.value = [...newFileAttachment, ...currentFileAttachment];
     try {
       await updateRecord(recordId, params);
-      DetailView.getInstance().addRecordAtLocal(({
-        'base64': history.base64,
-        'createAt': history.createAt,
-        'fullName': history.fullName,
-        'fileType': history.fileType,
-        'fileName': history.fileName
-      }) as HistoryDTO);
+      DetailView.getInstance().bind();
     } catch (error) {
       Utils.handleError(error);
     }
@@ -130,10 +138,10 @@ class Popup {
     try {
       const dataClient = await this.getDataFromClient();
       if (this.validateData(dataClient)) {
-        delete (dataClient.file);
         const history = dataClient.fcHistoryImages.value[0];
         const blob = new Blob([dataClient.file], {type: history.fileType});
         const result: FileKeyDTO = await uploadFile(blob, history.fileName);
+        delete (dataClient.file);
         const params: RecordDTO = Object.assign(dataClient, {'fcFileAttachment': {'value': [{'fileKey': result.fileKey}]}}) as RecordDTO;
         if (recordId > 0) {
           delete (params.fcFileName);
