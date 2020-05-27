@@ -4,8 +4,8 @@
 ## How to build
 ### Requirement
 ```
-	* Git
-	* Node.js
+* Git
+* Node.js
 ```
 ```
 $ git clone https://github.com/nmanhit/images-management.git
@@ -15,11 +15,9 @@ $ npm install
 
 ### Change config for application
 * You have to find config.example.ts file on root project and rename to config.ts
-* 4 special variable config must be change:
-	* API\_SERVICE\_ENDPOINT
+* 2 special variable config must be change:
 	* API_TOKEN
 	* ROOT_ID
-	* APP_ID
 
 
 ### Build
