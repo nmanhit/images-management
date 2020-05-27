@@ -1,5 +1,5 @@
-import {SOMETHING_WENT_WRONG} from '../constants/message';
-import {RESIZE_IMAGE} from '../config';
+import {SOMETHING_WENT_WRONG} from './constants/message';
+import {RESIZE_IMAGE} from './config';
 
 function timestampToString(timestamp: string | number) {
   if (!timestamp) {

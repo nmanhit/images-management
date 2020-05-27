@@ -1,5 +1,5 @@
-export const API_SERVICE_ENDPOINT = 'https://nguyen-hoang-anh.kintone.com';
-export const API_TOKEN = 'YmOGkyBxOMxg7YodMaiSEGs0nhoBR82neXvhcUwf';
+export const API_SERVICE_ENDPOINT = 'https://xxxx.kintone.com';
+export const API_TOKEN = '12345678';
 export const ROOT_ID = 'custom_image_management_container';
 export const APP_ID = 2;
 export const ITEMS_PER_PAGE = 20;

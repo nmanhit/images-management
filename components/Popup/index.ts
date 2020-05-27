@@ -1,5 +1,5 @@
 import {TITLE_HEADER} from '../../config';
-import Utils from '../../utils/index';
+import Utils from '../../util';
 import {addRecord, getRecordById, updateRecord} from '../../service/RecordManager';
 import {uploadFileAttachment} from '../../service/ImageManager';
 import {

@@ -1,4 +1,4 @@
-import Utils from '../../utils/index';
+import Utils from '../../util';
 import {THUMBNAIL, CREATED_AT} from '../../constants/message';
 import {getRecordById, updateRecord} from '../../service/RecordManager';
 import {uploadFileAttachment, downloadFileAttachment} from '../../service/ImageManager';

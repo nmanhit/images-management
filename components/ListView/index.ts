@@ -1,5 +1,5 @@
 import {ROOT_ID, API_SERVICE_ENDPOINT, TITLE_HEADER} from '../../config';
-import Utils from '../../utils/index';
+import Utils from '../../util';
 
 import {getRecords, getNewestRecord} from '../../service/RecordManager';
 import Button from '../BaseComponent/Button/index';
