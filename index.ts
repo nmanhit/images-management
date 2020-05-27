@@ -1,5 +1,6 @@
 import {SCROLL_OFFSET, APP_FIELD_CODE} from './config';
 import {ListView, DetailView} from './components/index';
+import {MSG_HAVE_TO_USE_CUSTOMIZATION} from './constants/message';
 
 kintone.events.on('app.record.index.show', () => {
   const listView = new ListView();
@@ -14,17 +15,26 @@ kintone.events.on('app.record.index.show', () => {
   };
 });
 
-function hideFields(fields: string[]) {
+function hideFields() {
+  const fields = [APP_FIELD_CODE.FC_FILE_NAME, APP_FIELD_CODE.FC_FILE_ATTACHMENT, APP_FIELD_CODE.FC_HISTORY_IMAGES];
   fields.forEach(field => {
     kintone.app.record.setFieldShown(field, false);
   });
 }
 
 kintone.events.on('app.record.detail.show', (event: any) => {
-  const fieldsToHide = [APP_FIELD_CODE.FC_FILE_NAME, APP_FIELD_CODE.FC_FILE_ATTACHMENT, APP_FIELD_CODE.FC_HISTORY_IMAGES];
-  hideFields(fieldsToHide);
+  hideFields();
   const detailView = DetailView.getInstance(event.recordId);
   const detailSpaceElm = kintone.app.record.getSpaceElement(APP_FIELD_CODE.FC_IMAGE_DETAIL);
   detailSpaceElm.appendChild(detailView.init());
   detailView.bind();
+});
+
+kintone.events.on('app.record.create.show', (event: any) => {
+  hideFields();
+});
+
+kintone.events.on('app.record.create.submit', (event: any) => {
+  alert(MSG_HAVE_TO_USE_CUSTOMIZATION);
+  return false;
 });

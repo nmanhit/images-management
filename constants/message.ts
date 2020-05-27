@@ -9,3 +9,4 @@ export const THUMBNAIL = 'Thumbnail';
 export const CREATED_AT = 'Created At';
 export const SOMETHING_WENT_WRONG = 'Something went wrong ! Please try agian.';
 export const LIST_VIEW_NO_PHOTO = 'Ready to add some photo? Let upload now !';
+export const MSG_HAVE_TO_USE_CUSTOMIZATION = 'You have to use customization';
