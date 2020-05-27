@@ -28,3 +28,11 @@
   flex-wrap: wrap;
   width: calc(100vw - 20px);
 }
+
+.cim-listview-content .cim-listview-message{
+  text-align: center;
+  width: 100%;
+  height: 60vh;
+  line-height: 50vh;
+  font-style: italic;
+}

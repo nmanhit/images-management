@@ -9,7 +9,10 @@ interface RecordDTO {
   'Record_number'?: {'value': number};
   'Created_datetime'?: {'value': string};
   'fcFileName': {'value': string};
-  'fcFileAttachment': {'value': [{'fileKey': string}]};
+  'fcFileAttachment': {'value': [{
+    'fileKey': string;
+    'name': string;
+  }];};
   'fcHistoryImages': {'value': string};
 }
 

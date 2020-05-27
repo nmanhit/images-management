@@ -26,10 +26,23 @@
   overflow: hidden;
 }
 
-.cim-card .cim-card-group .cim-card-item .cim-card-created-at{
+.cim-card .cim-card-group .cim-card-item .cim-card-footer .cim-card-created-at {
   font-size: 11px;
   text-align: right;
   color: #fff;
   margin-right: 10px;
   margin-bottom: 5px;
+}
+
+.cim-card .cim-card-group .cim-card-item .cim-card-footer {
+  line-height: 30px;
+}
+
+.cim-card .cim-card-group .cim-card-item .cim-card-footer .cim-card-download-icon {
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAQAAABKfvVzAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAHdElNRQfkBRsEAxbWCeKUAAAAyklEQVQ4y+2SMWoCQRiFvxFxK28QLfQGNrbbBgKpF0ln5zmSe6QQSW9jGm+iIJ7AYKFGPrvFZVyzFqbydfP+9/H+GQYi2XWj6sZuPK3FFi2aADRpVQOu6gHcBaifHxzwBHRyI7MPrMO4hHbpJS1K6+z5E8W39q9s6LOHQvzX1z8u5bAAjCq8gx95/D2eBttkwCpMciDwyRvwRRbM3Yw2MMFU1XmhI3Hq1KTgzVVN61xQ2PFStvD/fY1UqwE19jcV7DDx26NVdHRm4wSsGLi61LmFLwAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMC0wNS0yN1QwNDowMzoyMiswMDowMOXnRDsAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjAtMDUtMjdUMDQ6MDM6MjIrMDA6MDCUuvyHAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==');
+  width: 24px;
+  height: 24px;
+  float: left;
+  margin-left: 10px;
+  cursor: pointer;
 }

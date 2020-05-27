@@ -117,4 +117,25 @@ function humanFileSize(size: number) {
   return (size / (Math.pow(1024, i))).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
 }
 
-export default {timestampToString, utcToString, fileToBase64, b64toBlob, handleError, resizeImage, humanFileSize};
+function createElmDownloadFile(blobUrl: string, fileName: string) {
+  const root = document.querySelector('.download-attachement');
+  if (!root) {
+    const divElm = document.createElement('div');
+    divElm.classList.add('download-attachement');
+
+    const aElm = document.createElement('a');
+    aElm.setAttribute('href', blobUrl);
+    aElm.setAttribute('download', fileName);
+    divElm.appendChild(aElm);
+    document.body.appendChild(divElm);
+  } else {
+    const aElm = root.querySelector('a');
+    aElm.setAttribute('href', blobUrl);
+    aElm.setAttribute('download', fileName);
+  }
+  const divFileDownload = (document.querySelector('.download-attachement a')) as HTMLElement;
+  divFileDownload.click();
+  document.querySelector('.download-attachement').remove();
+}
+
+export default {timestampToString, utcToString, fileToBase64, b64toBlob, handleError, resizeImage, humanFileSize, createElmDownloadFile};

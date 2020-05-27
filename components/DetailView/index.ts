@@ -156,31 +156,11 @@ class DetailView {
     if (fileAttachment) {
       try {
         const file = await downloadFileAttachment(fileAttachment.fileKey);
-        this.createElmDownloadFile(file.blobUrl, fullName);
+        Utils.createElmDownloadFile(file.blobUrl, fullName);
       } catch (error) {
         Utils.handleError(error);
       }
     }
-  }
-
-  private createElmDownloadFile(blobUrl: string, fileName: string) {
-    const root = document.querySelector('.download-attachement');
-    if (!root) {
-      const divElm = document.createElement('div');
-      divElm.classList.add('download-attachement');
-
-      const aElm = document.createElement('a');
-      aElm.setAttribute('href', blobUrl);
-      aElm.setAttribute('download', fileName);
-      divElm.appendChild(aElm);
-      document.body.appendChild(divElm);
-    } else {
-      const aElm = root.querySelector('a');
-      aElm.setAttribute('href', blobUrl);
-      aElm.setAttribute('download', fileName);
-    }
-    const divFileDownload = (document.querySelector('.download-attachement a')) as HTMLElement;
-    divFileDownload.click();
   }
 
   private async showALargerImage(fileAttachment: FileKeyDTO) {

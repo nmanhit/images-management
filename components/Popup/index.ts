@@ -140,7 +140,7 @@ class Popup {
       if (this.validateData(dataClient)) {
         const history = dataClient.fcHistoryImages.value[0] as HistoryImageDTO;
         const blob = new Blob([dataClient.file], {type: history.fileType});
-        const result: FileKeyDTO = await uploadFileAttachment(blob, history.fileName);
+        const result: FileKeyDTO = await uploadFileAttachment(blob, history.fullName);
         delete (dataClient.file);
         const params: RecordDTO = Object.assign(dataClient, {'fcFileAttachment': {'value': [{'fileKey': result.fileKey}]}} as RecordDTO);
         if (recordId > 0) {

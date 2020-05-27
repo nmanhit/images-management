@@ -1,9 +1,22 @@
 import {API_SERVICE_ENDPOINT} from '../../../../config';
-import './index.css';
+import Utils from '../../../../util';
+import {downloadFileAttachment} from '../../../../service/ImageManager';
+
 import {CardDTO} from '../../types';
+import {FileKeyDTO} from '../../../DetailView/types';
+import './index.css';
 
 function openDetailPage(recordId: number): void {
   window.location.href = `${API_SERVICE_ENDPOINT}/k/${kintone.app.getId()}/show#record=${recordId}`;
+}
+
+async function dowloadImage(fileKey: string, name: string) {
+  try {
+    const file = await downloadFileAttachment(fileKey);
+    Utils.createElmDownloadFile(file.blobUrl, name);
+  } catch (error) {
+    Utils.handleError(error);
+  }
 }
 
 function render(params?: CardDTO) {
@@ -12,7 +25,9 @@ function render(params?: CardDTO) {
       'src': '',
       'fileName': '',
       'createdAt': '',
-      'uniqueId': 0
+      'uniqueId': 0,
+      'fileKey': '',
+      'name': ''
     },
     ...params
   };
@@ -36,12 +51,25 @@ function render(params?: CardDTO) {
   fileName.innerText = opts.fileName;
   fileName.classList.add('cim-card-file-name');
 
+  const footer = document.createElement('div');
+  footer.classList.add('cim-card-footer');
+
+  const downloadIcon = document.createElement('div');
+  downloadIcon.classList.add('cim-card-download-icon');
+  if (opts.fileKey) {
+    downloadIcon.addEventListener('click', () => dowloadImage(opts.fileKey, opts.name));
+  }
+
   const createdAt = document.createElement('div');
   createdAt.innerText = opts.createdAt;
   createdAt.classList.add('cim-card-created-at');
+
+  footer.appendChild(downloadIcon);
+  footer.appendChild(createdAt);
+
   item.appendChild(card);
   item.appendChild(fileName);
-  item.appendChild(createdAt);
+  item.appendChild(footer);
   group.appendChild(item);
   container.appendChild(group);
   return container;

@@ -1,5 +1,6 @@
-import {ROOT_ID, API_SERVICE_ENDPOINT, TITLE_HEADER} from '../../config';
+import {ROOT_ID, TITLE_HEADER} from '../../config';
 import Utils from '../../util';
+import {LIST_VIEW_NO_PHOTO} from '../../constants/message';
 
 import {getRecords, getNewestRecord} from '../../service/RecordManager';
 import Button from '../BaseComponent/Button/index';
@@ -7,10 +8,10 @@ import Popup from '../Popup/index';
 import Card from './components/Card/index';
 import Loading from './components/Loading/index';
 
-import './index.css';
 import {CardDTO} from './types';
-import {RecordDTO, HistoryImageDTO} from '../Popup/types';
+import {RecordDTO} from '../Popup/types';
 
+import './index.css';
 class ListView {
   private rootElm: HTMLElement;
   private pageIdx: number;
@@ -24,7 +25,11 @@ class ListView {
 
   public async renderItem() {
     const result = await getNewestRecord();
+    const divMessage = this.getListViewContentEl().querySelector('.cim-listview-message');
     if (result) {
+      if (divMessage) {
+        divMessage.remove();
+      }
       this.getListViewContentEl().prepend(this.createCardItem(result));
     }
   }
@@ -51,10 +56,6 @@ class ListView {
 
   private getListViewContentEl() {
     return this.rootElm.querySelector('.cim-listview-content') as HTMLDivElement;
-  }
-
-  private openDetailPage(recordId: number): void {
-    window.location.href = `${API_SERVICE_ENDPOINT}/k/${kintone.app.getId()}/show#record=${recordId}`;
   }
 
   private onloadStart() {
@@ -108,12 +109,23 @@ class ListView {
     const fileName = item?.fcFileName?.value || '';
     const uniqueId: number = item?.Record_number?.value || 0;
     const time = item?.Created_datetime?.value || '';
+    const fcFileAttachment = item?.fcFileAttachment.value || [];
+    let fileKey: string = '';
+    let name: string = '';
+
+    if (fcFileAttachment.length > 0) {
+      const data = fcFileAttachment[fcFileAttachment.length - 1];
+      fileKey = data.fileKey;
+      name = data.name;
+    }
     const createdAt: string = Utils.utcToString(time);
     const card: CardDTO = {
       src: this.getDataImg(histories),
       fileName,
       uniqueId,
-      createdAt
+      createdAt,
+      fileKey,
+      name
     };
     const divCard = Card.render(card);
     return divCard;
@@ -127,6 +139,12 @@ class ListView {
       this.onloadEnd();
     });
     if (!result || result.length === 0) {
+      if (this.pageIdx === 0) {
+        const divMessage = document.createElement('div');
+        divMessage.classList.add('cim-listview-message');
+        divMessage.innerText = LIST_VIEW_NO_PHOTO;
+        this.getListViewContentEl().appendChild(divMessage);
+      }
       this.pageIdx = -1;
     } else {
       this.pageIdx++;
