@@ -1,8 +1,8 @@
 import './index.css';
 
-function render(createAt: string) {
+function render(createdTime: string) {
   const td = document.createElement('td');
-  td.innerText = createAt;
+  td.innerText = createdTime;
   return td;
 }
 

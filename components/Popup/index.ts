@@ -1,6 +1,6 @@
 import {TITLE_HEADER} from '../../config';
 import Utils from '../../util';
-import {addRecord, getRecordById, updateRecord} from '../../service/RecordManager';
+import RecordManager from '../../service/RecordManager';
 import {uploadFileAttachment} from '../../service/ImageManager';
 import {
   POPUP_PLEASE_ENTER_YOUR_FILE_IMAGE,
@@ -110,14 +110,14 @@ class Popup {
   }
 
   private async updateGallery(recordId: number, params: any, history: any) {
-    const data = await getRecordById(recordId);
+    const data = await RecordManager.getRecordById(recordId);
     const currentFileAttachment = data?.fcFileAttachment?.value;
     const newFileAttachment = params.fcFileAttachment.value;
     const histories = JSON.parse(data?.fcHistoryImages?.value);
     params.fcHistoryImages.value = JSON.stringify([...histories, history]);
     params.fcFileAttachment.value = [...newFileAttachment, ...currentFileAttachment];
     try {
-      await updateRecord(recordId, params);
+      await RecordManager.updateRecord(recordId, params);
       DetailView.getInstance().bind();
     } catch (error) {
       Utils.handleError(error);
@@ -127,7 +127,7 @@ class Popup {
   private async addNewGallery(params: any) {
     try {
       params.fcHistoryImages.value = JSON.stringify(params.fcHistoryImages.value);
-      await addRecord(params);
+      await RecordManager.addRecord(params);
       new ListView().renderItem();
     } catch (error) {
       Utils.handleError(error);

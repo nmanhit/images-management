@@ -11,8 +11,8 @@ function openDetailPage(recordId: number): void {
 
 async function dowloadImage(fileKey: string, name: string) {
   try {
-    const file = await downloadFileAttachment(fileKey);
-    Utils.createElmDownloadFile(file.blobUrl, name);
+    const {blobUrl} = await downloadFileAttachment(fileKey);
+    Utils.createElmDownloadFile(blobUrl, name);
   } catch (error) {
     Utils.handleError(error);
   }

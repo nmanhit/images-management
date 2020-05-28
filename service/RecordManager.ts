@@ -2,16 +2,16 @@ import {get, post, put} from './Kintone/index';
 import {APP_ID, API_URL_RECORD, API_URL_RECORDS} from '../constants/index';
 import {ITEMS_PER_PAGE} from '../config';
 
-export const getRecordById = async (RecordId: number) => {
+async function getRecordById(RecordId: number) {
   const data = {
     app: APP_ID,
     id: RecordId
   };
   const result = await get(API_URL_RECORD, data);
   return result?.record;
-};
+}
 
-export const getNewestRecord = async () => {
+async function getNewestRecord() {
   const query = 'order by $id desc limit 1 offset 0';
   const data = {
     app: APP_ID,
@@ -20,9 +20,9 @@ export const getNewestRecord = async () => {
   const result = await get(API_URL_RECORDS, data);
   const total = result?.records?.length;
   return total > 0 ? result?.records[0] : null;
-};
+}
 
-export const getRecords = async (pageNum: number, onloadStart?: Function, onloadEnd?: Function) => {
+async function getRecords(pageNum: number, onloadStart?: Function, onloadEnd?: Function) {
   const offset = pageNum * ITEMS_PER_PAGE;
   const query = `order by $id desc limit ${ITEMS_PER_PAGE} offset ${offset}`;
   const data = {
@@ -31,9 +31,9 @@ export const getRecords = async (pageNum: number, onloadStart?: Function, onload
   };
   const result = await get(API_URL_RECORDS, data, onloadStart, onloadEnd);
   return result?.records;
-};
+}
 
-export const addRecord = async (params: any) => {
+async function addRecord(params: any) {
   const data = {
     app: APP_ID,
     record: {
@@ -42,9 +42,9 @@ export const addRecord = async (params: any) => {
   };
   const result = await post(API_URL_RECORD, JSON.stringify(data));
   return result;
-};
+}
 
-export const updateRecord = async (recordId: number, params: any) => {
+async function updateRecord(recordId: number, params: any) {
   const data = {
     app: APP_ID,
     id: recordId,
@@ -54,4 +54,6 @@ export const updateRecord = async (recordId: number, params: any) => {
   };
   const result = await put(API_URL_RECORD, JSON.stringify(data));
   return result;
-};
+}
+
+export default {getRecordById, getNewestRecord, getRecords, addRecord, updateRecord};

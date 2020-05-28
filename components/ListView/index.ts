@@ -2,7 +2,7 @@ import {ROOT_ID, TITLE_HEADER} from '../../config';
 import Utils from '../../util';
 import {LIST_VIEW_NO_PHOTO} from '../../constants/message';
 
-import {getRecords, getNewestRecord} from '../../service/RecordManager';
+import RecordManager from '../../service/RecordManager';
 import Button from '../BaseComponent/Button/index';
 import Popup from '../Popup/index';
 import Card from './components/Card/index';
@@ -24,7 +24,7 @@ class ListView {
   }
 
   public async renderItem() {
-    const result = await getNewestRecord();
+    const result = await RecordManager.getNewestRecord();
     const divMessage = this.getListViewContentEl().querySelector('.cim-listview-message');
     if (result) {
       if (divMessage) {
@@ -133,7 +133,7 @@ class ListView {
 
   private async showCards(pageIdx: number) {
     this.isLoading = true;
-    const result = await getRecords(pageIdx, () => {
+    const result = await RecordManager.getRecords(pageIdx, () => {
       this.onloadStart();
     }, () => {
       this.onloadEnd();

@@ -1,6 +1,6 @@
 import Utils from '../../util';
 import {THUMBNAIL, CREATED_AT} from '../../constants/message';
-import {getRecordById, updateRecord} from '../../service/RecordManager';
+import RecordManager from '../../service/RecordManager';
 import {uploadFileAttachment, downloadFileAttachment} from '../../service/ImageManager';
 import Button from '../BaseComponent/Button/index';
 import Popup from '../Popup/index';
@@ -42,7 +42,7 @@ class DetailView {
 
   public async bind() {
     try {
-      const result = await getRecordById(this.recordId);
+      const result = await RecordManager.getRecordById(this.recordId);
       const strHistory = result?.fcHistoryImages?.value || null;
       const fileAttachments = result?.fcFileAttachment || null;
       if (strHistory) {
@@ -122,7 +122,7 @@ class DetailView {
     for (let i = maxLength; i > -1; i--) {
       const history = histories[i];
       const fileAttachment: FileKeyDTO = fileAttachments.value[i] || null;
-      if (history) {
+      if (history && fileAttachment) {
         const isNewest = maxLength === i;
         recordElm.appendChild(this.createRecord(history, fileAttachment, isNewest, i));
       }
@@ -145,7 +145,7 @@ class DetailView {
         'fcFileAttachment': this.fileAttachments,
         'fcHistoryImages': {'value': JSON.stringify(this.histories)}
       };
-      await updateRecord(this.recordId, record);
+      await RecordManager.updateRecord(this.recordId, record);
       await this.bind();
     } catch (error) {
       Utils.handleError(error);
@@ -156,8 +156,8 @@ class DetailView {
     event.stopPropagation();
     if (fileAttachment) {
       try {
-        const file = await downloadFileAttachment(fileAttachment.fileKey);
-        Utils.createElmDownloadFile(file.blobUrl, fullName);
+        const {blobUrl} = await downloadFileAttachment(fileAttachment.fileKey);
+        Utils.createElmDownloadFile(blobUrl, fullName);
       } catch (error) {
         Utils.handleError(error);
       }
