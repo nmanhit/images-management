@@ -1,5 +1,4 @@
 import {API_SERVICE_ENDPOINT} from '../../constants/index';
-import {API_TOKEN} from '../../config';
 
 function get(url: string, params: any, onloadStart?: any, onloadEnd?: any) {
   let action = `${API_SERVICE_ENDPOINT}${url}.json`;
@@ -9,7 +8,6 @@ function get(url: string, params: any, onloadStart?: any, onloadEnd?: any) {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', action);
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    xhr.setRequestHeader('X-Cybozu-API-Token', API_TOKEN);
     if (onloadStart) {
       xhr.onloadstart = onloadStart;
     }

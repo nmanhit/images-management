@@ -1,5 +1,3 @@
-export const API_TOKEN = '12345678';
-
 export const ROOT_ID = 'custom_image_management_container';
 export const ITEMS_PER_PAGE = 20;
 export const SCROLL_OFFSET = 250;

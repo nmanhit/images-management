@@ -1,15 +1,13 @@
 import {API_SERVICE_ENDPOINT} from '../../constants/index';
-import {API_TOKEN} from '../../config';
 
 function download(url: string, params: any, onloadStart?: any, onloadEnd?: any) {
   let action = `${API_SERVICE_ENDPOINT}${url}.json`;
   const query = toQueryString(params);
-  action = query ? `${action}?${query}` : action;
+  action = query ? `${action}?${query} ` : action;
   return new kintone.Promise((resolve: Function, reject: Function) => {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', action);
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    xhr.setRequestHeader('X-Cybozu-API-Token', API_TOKEN);
     xhr.responseType = 'blob';
     if (onloadStart) {
       xhr.onloadstart = onloadStart;

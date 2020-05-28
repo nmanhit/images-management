@@ -4,8 +4,9 @@ import {ITEMS_PER_PAGE} from '../config';
 
 async function getRecordById(RecordId: number) {
   const data = {
-    app: APP_ID,
-    id: RecordId
+    '__REQUEST_TOKEN__': kintone.getRequestToken(),
+    'app': APP_ID,
+    'id': RecordId
   };
   const result = await get(API_URL_RECORD, data);
   return result?.record;
@@ -14,8 +15,9 @@ async function getRecordById(RecordId: number) {
 async function getNewestRecord() {
   const query = 'order by $id desc limit 1 offset 0';
   const data = {
-    app: APP_ID,
-    query: query
+    '__REQUEST_TOKEN__': kintone.getRequestToken(),
+    'app': APP_ID,
+    'query': query
   };
   const result = await get(API_URL_RECORDS, data);
   const total = result?.records?.length;
@@ -26,8 +28,9 @@ async function getRecords(pageNum: number, onloadStart?: Function, onloadEnd?: F
   const offset = pageNum * ITEMS_PER_PAGE;
   const query = `order by $id desc limit ${ITEMS_PER_PAGE} offset ${offset}`;
   const data = {
-    app: APP_ID,
-    query: query
+    '__REQUEST_TOKEN__': kintone.getRequestToken(),
+    'app': APP_ID,
+    'query': query
   };
   const result = await get(API_URL_RECORDS, data, onloadStart, onloadEnd);
   return result?.records;
@@ -35,8 +38,9 @@ async function getRecords(pageNum: number, onloadStart?: Function, onloadEnd?: F
 
 async function addRecord(params: any) {
   const data = {
-    app: APP_ID,
-    record: {
+    '__REQUEST_TOKEN__': kintone.getRequestToken(),
+    'app': APP_ID,
+    'record': {
       ...params
     },
   };
@@ -46,9 +50,10 @@ async function addRecord(params: any) {
 
 async function updateRecord(recordId: number, params: any) {
   const data = {
-    app: APP_ID,
-    id: recordId,
-    record: {
+    '__REQUEST_TOKEN__': kintone.getRequestToken(),
+    'app': APP_ID,
+    'id': recordId,
+    'record': {
       ...params
     },
   };

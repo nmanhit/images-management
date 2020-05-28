@@ -15,8 +15,7 @@ $ npm install
 
 ### Change config for application
 * You have to find config.example.ts file on root project and rename to config.ts
-* 2 special variable config must be change:
-	* API_TOKEN
+* 1 special variable config must be change:
 	* ROOT_ID
 
 
