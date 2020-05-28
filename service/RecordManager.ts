@@ -1,6 +1,6 @@
-import {get, post, put, download} from './Kintone/index';
-import {API_URL_RECORD, API_URL_RECORDS} from '../constants/index';
-import {APP_ID, ITEMS_PER_PAGE} from '../config';
+import {get, post, put} from './Kintone/index';
+import {APP_ID, API_URL_RECORD, API_URL_RECORDS} from '../constants/index';
+import {ITEMS_PER_PAGE} from '../config';
 
 export const getRecordById = async (RecordId: number) => {
   const data = {

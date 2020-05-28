@@ -1,4 +1,5 @@
-import {API_SERVICE_ENDPOINT, API_TOKEN} from '../../config';
+import {API_SERVICE_ENDPOINT} from '../../constants/index';
+import {API_TOKEN} from '../../config';
 
 function download(url: string, params: any, onloadStart?: any, onloadEnd?: any) {
   let action = `${API_SERVICE_ENDPOINT}${url}.json`;

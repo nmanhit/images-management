@@ -1,4 +1,5 @@
-import {API_SERVICE_ENDPOINT, API_TOKEN} from '../../config';
+import {API_SERVICE_ENDPOINT} from '../../constants/index';
+import {API_TOKEN} from '../../config';
 
 function post(url: string, params: any, addContentType: boolean = true) {
   const action = `${API_SERVICE_ENDPOINT}${url}.json`;

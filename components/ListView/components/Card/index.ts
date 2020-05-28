@@ -1,9 +1,8 @@
-import {API_SERVICE_ENDPOINT} from '../../../../config';
+import {API_SERVICE_ENDPOINT} from '../../../../constants/index';
 import Utils from '../../../../util';
 import {downloadFileAttachment} from '../../../../service/ImageManager';
 
 import {CardDTO} from '../../types';
-import {FileKeyDTO} from '../../../DetailView/types';
 import './index.css';
 
 function openDetailPage(recordId: number): void {

@@ -110,7 +110,7 @@ class DetailView {
     if (isNewest === false) {
       restoreBtn.addEventListener('click', () => this.restoreImage(history, fileAttachment));
     }
-    dowloadBtn.addEventListener('click', () => this.dowloadImage(fileAttachment, history.fullName));
+    dowloadBtn.addEventListener('click', () => this.dowloadImage(event, fileAttachment, history.fullName));
     restoreBtn.appendChild(dowloadBtn);
     rowItem.appendChild(restoreBtn);
     return rowItem;
@@ -152,7 +152,8 @@ class DetailView {
     }
   }
 
-  private async dowloadImage(fileAttachment: FileKeyDTO, fullName: string) {
+  private async dowloadImage(event: Event, fileAttachment: FileKeyDTO, fullName: string) {
+    event.stopPropagation();
     if (fileAttachment) {
       try {
         const file = await downloadFileAttachment(fileAttachment.fileKey);
