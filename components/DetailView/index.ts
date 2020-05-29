@@ -9,6 +9,7 @@ import {HistoryDTO, FileAttachmentDTO, FileKeyDTO, RestoreDTO} from './types';
 
 import './index.css';
 import ShowImage from '../ShowImage/index';
+import Loading from '../ListView/components/Loading/index';
 class DetailView {
   private static instance: DetailView;
   private recordId: number;
@@ -135,6 +136,7 @@ class DetailView {
 
   private async restoreImage(history: HistoryDTO, fileAttachment: FileKeyDTO) {
     try {
+      Loading.beforeSend();
       history.createAt = new Date().getTime().toString();
       this.histories.push(history);
       const {blob} = await downloadFileAttachment(fileAttachment.fileKey);
@@ -149,6 +151,8 @@ class DetailView {
       await this.bind();
     } catch (error) {
       Utils.handleError(error);
+    } finally {
+      Loading.success();
     }
   }
 

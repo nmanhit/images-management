@@ -16,7 +16,7 @@ interface FileKeyDTO {
 }
 
 interface RestoreDTO {
-  'fcFileAttachment': FileAttachmentDTO;// {'value': [{'fileKey': string}]};
+  'fcFileAttachment': FileAttachmentDTO;
   'fcHistoryImages': {'value': string};
 }
 

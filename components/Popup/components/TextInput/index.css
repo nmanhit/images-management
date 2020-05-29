@@ -4,10 +4,9 @@
 }
 
 .cim-popup-container .cim-input-group .cim-input{
-  border-radius: 2px;
-    padding: 2px;
-    margin-left: 15px;
-    width: 400px;
+  padding: 2px;
+  margin-left: 15px;
+  width: 400px;
 }
 
 .cim-popup-container .cim-popup-choose-file{

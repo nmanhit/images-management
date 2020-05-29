@@ -36,3 +36,28 @@
   line-height: 50vh;
   font-style: italic;
 }
+
+.wapper-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: rgb(0, 0, 0, 0.5);
+  z-index: 999999;
+}
+
+.wapper-loader .loader {
+  top: 50%;
+  position: absolute;
+  left: 50%;
+  transform: translate( -50%, -50%);
+}
+
+.wapper-loader .loader img {
+  background-color: #f5f0f0;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}

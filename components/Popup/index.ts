@@ -12,6 +12,7 @@ import {
 
 import {ListView, DetailView} from '../index';
 import {TextInput, FileInput} from './components/index';
+import Loading from '../ListView/components/Loading/index';
 import Button from '../BaseComponent/Button/index';
 import {ButtonDTO} from '../BaseComponent/Button/types';
 import {FileKeyDTO} from '../DetailView/types';
@@ -110,27 +111,33 @@ class Popup {
   }
 
   private async updateGallery(recordId: number, params: any, history: any) {
-    const data = await RecordManager.getRecordById(recordId);
-    const currentFileAttachment = data?.fcFileAttachment?.value;
-    const newFileAttachment = params.fcFileAttachment.value;
-    const histories = JSON.parse(data?.fcHistoryImages?.value);
-    params.fcHistoryImages.value = JSON.stringify([...histories, history]);
-    params.fcFileAttachment.value = [...newFileAttachment, ...currentFileAttachment];
     try {
+      Loading.beforeSend();
+      const data = await RecordManager.getRecordById(recordId);
+      const currentFileAttachment = data?.fcFileAttachment?.value;
+      const newFileAttachment = params.fcFileAttachment.value;
+      const histories = JSON.parse(data?.fcHistoryImages?.value);
+      params.fcHistoryImages.value = JSON.stringify([...histories, history]);
+      params.fcFileAttachment.value = [...newFileAttachment, ...currentFileAttachment];
       await RecordManager.updateRecord(recordId, params);
       DetailView.getInstance().bind();
     } catch (error) {
       Utils.handleError(error);
+    } finally {
+      Loading.success();
     }
   }
 
   private async addNewGallery(params: any) {
     try {
+      Loading.beforeSend();
       params.fcHistoryImages.value = JSON.stringify(params.fcHistoryImages.value);
       await RecordManager.addRecord(params);
       new ListView().renderItem();
     } catch (error) {
       Utils.handleError(error);
+    } finally {
+      Loading.success();
     }
   }
 
