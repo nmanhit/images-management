@@ -82,17 +82,22 @@ class DetailView {
   private createTableView(): HTMLTableElement {
     const table = document.createElement('table');
     table.classList.add('cim-detailview-table');
+
     const thead = document.createElement('thead');
     const tHeadTr = document.createElement('tr');
+
     const thThumbnail = document.createElement('th');
     thThumbnail.innerText = THUMBNAIL;
+    tHeadTr.appendChild(thThumbnail);
+
     const thCreatedAt = document.createElement('th');
     thCreatedAt.innerText = CREATED_AT;
-    const thAction = document.createElement('th');
-    tHeadTr.appendChild(thThumbnail);
     tHeadTr.appendChild(thCreatedAt);
+
+    const thAction = document.createElement('th');
     tHeadTr.appendChild(thAction);
     thead.appendChild(tHeadTr);
+
     const tbody = document.createElement('tbody');
     tbody.classList.add('detail-record');
     table.appendChild(thead);

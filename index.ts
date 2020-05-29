@@ -30,11 +30,11 @@ kintone.events.on('app.record.detail.show', (event: any) => {
   detailView.bind();
 });
 
-kintone.events.on('app.record.create.show', (event: any) => {
+kintone.events.on(['app.record.create.show', 'app.record.edit.show'], (event: any) => {
   hideFields();
 });
 
-kintone.events.on('app.record.create.submit', (event: any) => {
-  alert(MSG_HAVE_TO_USE_CUSTOMIZATION);
-  return false;
+kintone.events.on(['app.record.edit.submit', 'app.record.create.submit'], (event: any) => {
+  event.error = MSG_HAVE_TO_USE_CUSTOMIZATION;
+  return event;
 });
