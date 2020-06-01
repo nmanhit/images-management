@@ -138,4 +138,36 @@ function createElmDownloadFile(blobUrl: string, fileName: string) {
   document.querySelector('.download-attachement').remove();
 }
 
-export default {timestampToString, utcToString, fileToBase64, b64toBlob, handleError, resizeImage, humanFileSize, createElmDownloadFile};
+
+function request(url: string, method: string, data: any, header: any, responseType?: XMLHttpRequestResponseType, onloadStart?: any, onloadEnd?: any) {
+  return new kintone.Promise((resolve: Function, reject: Function) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open(method, url);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    if (responseType) {
+      xhr.responseType = responseType;
+    }
+    for (const i in header) {
+      if (Object.prototype.hasOwnProperty.call(header, i)) {
+        xhr.setRequestHeader(i, header[i]);
+      }
+    }
+
+    if (onloadStart) {
+      xhr.onloadstart = onloadStart;
+    }
+    if (onloadEnd) {
+      xhr.onloadend = onloadEnd;
+    }
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        resolve(xhr.response);
+      } else {
+        reject(xhr.responseText);
+      }
+    };
+    xhr.send(data);
+  });
+}
+
+export default {timestampToString, utcToString, fileToBase64, b64toBlob, handleError, resizeImage, humanFileSize, createElmDownloadFile, request};

@@ -1,4 +1,5 @@
-import {post, download} from './Kintone/index';
+import {download} from './kintone/index';
+import {post} from './kintone/restapi/index';
 import {API_URL_FILE} from '../constants/index';
 import {FileKeyDTO} from '../components/DetailView/types';
 

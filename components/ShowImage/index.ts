@@ -50,7 +50,9 @@ class ShowImage {
   }
 
   private showImage() {
-    (document.querySelector('.show-image-large img') as HTMLImageElement).src = this.image;
+    if (this.image) {
+      (document.querySelector('.show-image-large img') as HTMLImageElement).src = this.image;
+    }
   }
 
   private createPopupWrapper(): HTMLDivElement {

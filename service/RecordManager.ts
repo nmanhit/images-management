@@ -1,6 +1,6 @@
-import {get, post, put} from './Kintone/index';
 import {APP_ID, API_URL_RECORD, API_URL_RECORDS} from '../constants/index';
 import {ITEMS_PER_PAGE} from '../config';
+import {get, post, put} from './kintone/restapi/index';
 
 async function getRecordById(RecordId: number) {
   const data = {
@@ -32,7 +32,7 @@ async function getRecords(pageNum: number, onloadStart?: Function, onloadEnd?: F
     'app': APP_ID,
     'query': query
   };
-  const result = await get(API_URL_RECORDS, data, onloadStart, onloadEnd);
+  const result = await get(API_URL_RECORDS, data, null, null, onloadStart, onloadEnd);
   return result?.records;
 }
 
@@ -44,7 +44,8 @@ async function addRecord(params: any) {
       ...params
     },
   };
-  const result = await post(API_URL_RECORD, JSON.stringify(data));
+  const header = {'Content-Type': 'application/json'};
+  const result = await post(API_URL_RECORD, JSON.stringify(data), header);
   return result;
 }
 
@@ -57,7 +58,8 @@ async function updateRecord(recordId: number, params: any) {
       ...params
     },
   };
-  const result = await put(API_URL_RECORD, JSON.stringify(data));
+  const header = {'Content-Type': 'application/json'};
+  const result = await put(API_URL_RECORD, JSON.stringify(data), header);
   return result;
 }
 

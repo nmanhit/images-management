@@ -53,6 +53,7 @@ class Popup {
       wrapper.appendChild(container);
       container.appendChild(this.createFileInput());
       container.appendChild(this.createDivMessageError());
+
       const footer = this.createButtonUploadAndCancel();
       container.appendChild(footer);
       this.root.appendChild(wrapper);
@@ -69,21 +70,23 @@ class Popup {
 
   private async getDataFromClient() {
     const fileName = (this.root.querySelector('.file-name-input') as HTMLInputElement).value || '';
-    const file = (this.root.querySelector('.file-upload-class') as HTMLInputElement).files[0];
+    const fileUpload = (this.root.querySelector('.file-upload-class') as HTMLInputElement).files[0];
     let fileBase64 = '';
     let resize = '';
-    if (file && this.isTypeImage(file.type)) {
-      fileBase64 = await Utils.fileToBase64(file) as string;
-      resize = await Utils.resizeImage(fileBase64) as string;
+    if (fileUpload && this.isTypeImage(fileUpload.type)) {
+      fileBase64 = await Utils.fileToBase64(fileUpload) as string;
+      if (fileBase64) {
+        resize = await Utils.resizeImage(fileBase64) as string;
+      }
     }
     const result: GalleryDTO = {
-      file: file,
+      file: fileUpload,
       fcFileName: {value: fileName},
       fcHistoryImages: {
         value: [{
           fileName: fileName,
-          fullName: file?.name,
-          fileType: file?.type,
+          fullName: fileUpload?.name,
+          fileType: fileUpload?.type,
           createAt: new Date().getTime().toString(),
           base64: resize
         }]
@@ -94,7 +97,7 @@ class Popup {
 
   private validateData(params: GalleryDTO) {
     const file: File = (params.file as File);
-    if (!params.fcFileName.value && this.recordId === 0) {
+    if (this.recordId === 0 && !params.fcFileName.value) {
       this.setMessage(POPUP_PLEASE_ENTER_YOUR_FILE_NAME);
       return false;
     }
@@ -120,7 +123,8 @@ class Popup {
       params.fcHistoryImages.value = JSON.stringify([...histories, history]);
       params.fcFileAttachment.value = [...newFileAttachment, ...currentFileAttachment];
       await RecordManager.updateRecord(recordId, params);
-      DetailView.getInstance().bind();
+      const record = await RecordManager.getRecordById(recordId);
+      DetailView.getInstance().render(record);
     } catch (error) {
       Utils.handleError(error);
     } finally {
@@ -247,6 +251,7 @@ class Popup {
   private createButtonUploadAndCancel(): HTMLDivElement {
     const footer = document.createElement('div');
     footer.classList.add('cim-popup-footer');
+
     const dataUploadBtn: ButtonDTO = {'id': 'btn_upload', 'class': 'success', 'text': 'Upload'};
     const btnUpload = Button.render(dataUploadBtn);
     footer.appendChild(btnUpload);

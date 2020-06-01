@@ -39,9 +39,10 @@ class ListView {
     const navBar = this.createNavBar();
     container.appendChild(navBar);
     navBar.appendChild(this.createHeader());
-    navBar.appendChild(this.createButtonUpload());
     container.appendChild(this.createDivContent());
     this.rootElm.appendChild(container);
+
+    kintone.app.getHeaderMenuSpaceElement().appendChild(this.createButtonUpload());
   }
 
   public async bind() {
@@ -127,42 +128,46 @@ class ListView {
       fileKey,
       name
     };
-    const divCard = Card.render(card);
-    return divCard;
+    return Card.render(card);
   }
 
   private async showCards(pageIdx: number) {
-    this.isLoading = true;
-    const result = await RecordManager.getRecords(pageIdx, () => {
-      this.onloadStart();
-    }, () => {
-      this.onloadEnd();
-    });
-    if (!result || result.length === 0) {
-      if (this.pageIdx === 0) {
-        const divMessage = document.createElement('div');
-        divMessage.classList.add('cim-listview-message');
-        divMessage.innerText = LIST_VIEW_NO_PHOTO;
-        this.getListViewContentEl().appendChild(divMessage);
+    try {
+      this.isLoading = true;
+      const result = await RecordManager.getRecords(pageIdx, () => {
+        this.onloadStart();
+      }, () => {
+        this.onloadEnd();
+      });
+      if (!result || result.length === 0) {
+        if (this.pageIdx === 0) {
+          const divMessage = document.createElement('div');
+          divMessage.classList.add('cim-listview-message');
+          divMessage.innerText = LIST_VIEW_NO_PHOTO;
+          this.getListViewContentEl().appendChild(divMessage);
+        }
+        this.pageIdx = -1;
+      } else {
+        this.pageIdx++;
+        for (const item of result) {
+          this.getListViewContentEl().append(this.createCardItem(item));
+        }
       }
-      this.pageIdx = -1;
-    } else {
-      this.pageIdx++;
-      for (const item of result) {
-        this.getListViewContentEl().append(this.createCardItem(item));
-      }
+    } catch (error) {
+      Utils.handleError(error);
+    } finally {
+      this.isLoading = false;
     }
-    this.isLoading = false;
   }
 
   private getDataImg(histories: string) {
     if (!histories) {
       return '';
     }
-    const historyArrayObj = JSON.parse(histories);
-    const totalFiles = historyArrayObj.length;
+    const historiesObj = JSON.parse(histories);
+    const totalFiles = historiesObj.length;
     if (totalFiles > 0) {
-      return historyArrayObj[totalFiles - 1].base64;
+      return historiesObj[totalFiles - 1].base64;
     }
     return '';
   }
