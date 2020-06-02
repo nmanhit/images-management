@@ -41,7 +41,6 @@ class ListView {
     navBar.appendChild(this.createHeader());
     container.appendChild(this.createDivContent());
     this.rootElm.appendChild(container);
-
     kintone.app.getHeaderMenuSpaceElement().appendChild(this.createButtonUpload());
   }
 

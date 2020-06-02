@@ -39,8 +39,7 @@ class DetailView {
     container.classList.add('cim-detailview-container');
     const content = document.createElement('div');
     content.classList.add('cim-detailview-content');
-
-    container.appendChild(this.createButtonUpdate());
+    kintone.app.record.getHeaderMenuSpaceElement().appendChild(this.createButtonUpdate());
     container.appendChild(this.createHeader());
     content.appendChild(this.createTableView());
     container.appendChild(content);
